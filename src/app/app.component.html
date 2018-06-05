@@ -1,0 +1,91 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow">
+    <span class="navbar-brand font-weight-bold pr-5" (click)="openPage('demo')">Gabor Filters</span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" (click)="collapsed = !collapsed"></span>
+    </button>
+    <div class="navbar-collapse" [ngClass]="collapsed ? 'collapse' : ''" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <span class="nav-link text-primary" href="#" (click)="openPage('demo')">Demo</span>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link text-primary" href="#" (click)="openPage('docs')">Docs</span>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link text-primary" href="#" (click)="openPage('about')">About</span>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="page pt-5 pb-5">
+        <router-outlet></router-outlet>
+    </div>
+
+    <!--
+    <div class="card-deck mb-3 text-center">
+        <div class="card mb-4 box-shadow">
+            <div class="card-header">
+                <h4 class="">Free</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">$0 <small class="text-muted">/ mo</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>10 users included</li>
+                    <li>2 GB of storage</li>
+                    <li>Email support</li>
+                    <li>Help center access</li>
+                </ul>
+                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Sign up for free</button>
+            </div>
+        </div>
+        <div class="card mb-4 box-shadow">
+            <div class="card-header">
+                <h4 class="">Pro</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">$15 <small class="text-muted">/ mo</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>20 users included</li>
+                    <li>10 GB of storage</li>
+                    <li>Priority email support</li>
+                    <li>Help center access</li>
+                </ul>
+                <button type="button" class="btn btn-lg btn-block btn-primary">Get started</button>
+            </div>
+        </div>
+        <div class="card mb-4 box-shadow">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Enterprise</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">$29 <small class="text-muted">/ mo</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>30 users included</li>
+                    <li>15 GB of storage</li>
+                    <li>Phone and email support</li>
+                    <li>Help center access</li>
+                </ul>
+                <button type="button" class="btn btn-lg btn-block btn-primary">Contact us</button>
+            </div>
+        </div>
+    </div>-->
+
+    <footer class="pt-4 pt-5 pb-5 border-top">
+        <div class="row align-items-center">
+            <div class="d-none d-md-block col-md-6 px-4 py-1 text-center text-md-right border-right">
+                <img src="assets/images/logo/unibas.jpg">
+            </div>
+            <div class="col-12 col-md-6 px-4 py-1 text-center text-md-left">
+                <small class="text-muted">Andreas Aeschlimann &copy; 2018</small>
+            </div>
+            <div class="col-12 d-md-none mt-3 text-center">
+                <img src="assets/images/logo/unibas.jpg">
+            </div>
+        </div>
+    </footer>
+
+</div>
+
