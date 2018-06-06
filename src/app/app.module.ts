@@ -5,15 +5,19 @@ import {RouterModule, Routes} from "@angular/router";
 import {AppComponent} from "./app.component";
 
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import { DemoComponent } from './demo/demo.component';
-import { DocsComponent } from './docs/docs.component';
-import { AboutComponent } from './about/about.component';
+import { DemoComponent } from "./demo/demo.component";
+import { DocsComponent } from "./docs/docs.component";
+import { AboutComponent } from "./about/about.component";
+
+//import { MathJaxDirective } from "./math-jax.directive";
 
 const appRoutes: Routes = [
+    //{ path: "", component: DemoComponent },
     { path: "demo", component: DemoComponent },
     { path: "docs", component: DocsComponent },
     { path: "about", component: AboutComponent },
-    { path: '**', component: DemoComponent }
+    { path: "*", redirectTo: "/demo" },
+    { path: "**", component: DemoComponent }
 ];
 
 @NgModule({
@@ -21,13 +25,14 @@ const appRoutes: Routes = [
         AppComponent,
         DemoComponent,
         DocsComponent,
-        AboutComponent
+        AboutComponent,
+        //MathJaxDirective
     ],
     imports: [
         BrowserModule,
         RouterModule.forRoot(
             appRoutes,
-            { enableTracing: true }
+            { enableTracing: false }
         ),
         NgbModule.forRoot()
     ],

@@ -21,7 +21,9 @@
     "@angular/platform-browser-dynamic": "^6.0.3",
     "@angular/router": "^6.0.3",
     "@ng-bootstrap/ng-bootstrap": "^2.0.0",
+    "@types/mathjax": "0.0.34",
     "core-js": "^2.5.4",
+    "mathjax": "^2.7.4",
     "rxjs": "^6.0.0",
     "zone.js": "^0.8.26"
   },

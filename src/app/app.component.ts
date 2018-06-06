@@ -16,7 +16,7 @@ export class AppComponent {
 
     openPage(url: string) {
         this.collapsed = true;
-        this.router.navigate([url]);
+        this.router.navigate(["/" + url]);
     }
 
 }
