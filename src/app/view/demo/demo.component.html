@@ -1,0 +1,92 @@
+<div class="row">
+    <div class="col-12 col-sm-6 col-lg-8 mb-5">
+        <h1 class="mb-4">Gabor Filter Demo</h1>
+        <p>This page allows the mathematical convolution of an image with a Gabor filter. Please refer to the <span class="link btn-link" (click)="openDocs()">docs</span> to learn more about the theory and the involved parameters.</p>
+
+        <h4 class="mt-4 mb-3">Input image</h4>
+        <canvas #inputCanvas width="1024" height="1024"></canvas>
+
+        <h4 class="mt-4 mb-3">Output image</h4>
+        <p *ngIf="progressBarValue > 0">
+            <ngb-progressbar [showValue]="true" type="primary" [value]="progressBarValue"></ngb-progressbar>
+        </p>
+        <canvas #outputCanvas width="1024" height="1024"></canvas>
+
+    </div>
+    <div class="col-12 col-sm-6 col-lg-4">
+        <div class="card">
+            <img class="card-img-top" src="assets/images/filters.jpg" alt="Logo">
+            <div class="card-body">
+                <h5 class="card-title">Generate filter output</h5>
+                <p class="card-text">
+                    Select an input image and set the parameters for the filtering below.
+                </p>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item">
+                    <p class="font-weight-bold">Image selection</p>
+                    <p class="card-text">Select an image from the list or upload your own.</p>
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <select class="form-control" [(ngModel)]="image" (ngModelChange)="saveListedImage(image)">
+                                <option *ngFor="let image of images" [ngValue]="image">{{ image.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row" *ngIf="image.url === ''">
+                        <div class="col-12">
+                            <input type="file" class="form-control" id="input" (change)="saveUploadedImage($event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item">
+                    <p class="font-weight-bold">Filter parameters</p>
+                    <p class="card-text">Define the Gabor filter parameters below.</p>
+                    <div class="form-group row">
+                        <div class="col-4 pr-0"><span
+                                [appMathJax]="'$\\xi$'"></span>={{ xi }}</div>
+                        <div class="col-8">
+                            <app-input-slider [(ngModel)]="xi" [min]="0.1" [max]="10" [step]="0.1"></app-input-slider>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 pr-0"><span
+                                [appMathJax]="'$\\sigma$'"></span>={{ sigma }}</div>
+                        <div class="col-8">
+                            <app-input-slider [(ngModel)]="sigma" [min]="0.1" [max]="10" [step]="0.1"></app-input-slider>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 pr-0"><span
+                                [appMathJax]="'$\\lambda$'"></span>={{ lambda }}</div>
+                        <div class="col-8">
+                            <app-input-slider [(ngModel)]="lambda" [min]="1.0" [max]="20" [step]="0.1"></app-input-slider>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 pr-0"><span
+                                [appMathJax]="'$\\theta$'"></span>={{ theta }}</div>
+                        <div class="col-8">
+                            <app-input-slider [(ngModel)]="theta" [min]="0" [max]="179" [step]="1"></app-input-slider>
+                        </div>
+                    </div>
+                    <p class="card-text">Define the amount of rotations that are calculated.</p>
+                    <div class="form-group row">
+                        <div class="col-4 pr-0"><span
+                                [appMathJax]="'$N$'"></span>={{ amount }}</div>
+                        <div class="col-8">
+                            <app-input-slider [(ngModel)]="amount" [min]="1" [max]="8" [step]="1"></app-input-slider>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item text-center">
+                    <button class="btn btn-outline-primary">Generate output image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

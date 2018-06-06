@@ -1,23 +1,24 @@
 import {BrowserModule} from "@angular/platform-browser";
 import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
+import {FormsModule} from "@angular/forms";
 
 import {AppComponent} from "./app.component";
 
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import { DemoComponent } from "./demo/demo.component";
-import { DocsComponent } from "./docs/docs.component";
-import { AboutComponent } from "./about/about.component";
+import {DemoComponent} from "./view/demo/demo.component";
+import {DocsComponent} from "./view/docs/docs.component";
+import {AboutComponent} from "./view/about/about.component";
 
-//import { MathJaxDirective } from "./math-jax.directive";
+import {MathJaxDirective} from "./model/other/math-jax.directive";
+import { InputSliderComponent } from "./view/input-slider/input-slider.component";
 
 const appRoutes: Routes = [
-    //{ path: "", component: DemoComponent },
-    { path: "demo", component: DemoComponent },
-    { path: "docs", component: DocsComponent },
-    { path: "about", component: AboutComponent },
-    { path: "*", redirectTo: "/demo" },
-    { path: "**", component: DemoComponent }
+    {path: "demo", component: DemoComponent},
+    {path: "docs", component: DocsComponent},
+    {path: "about", component: AboutComponent},
+    {path: "*", redirectTo: "/demo"},
+    {path: "**", redirectTo: "/demo"}
 ];
 
 @NgModule({
@@ -26,13 +27,15 @@ const appRoutes: Routes = [
         DemoComponent,
         DocsComponent,
         AboutComponent,
-        //MathJaxDirective
+        MathJaxDirective,
+        InputSliderComponent
     ],
     imports: [
         BrowserModule,
+        FormsModule,
         RouterModule.forRoot(
             appRoutes,
-            { enableTracing: false }
+            {enableTracing: false}
         ),
         NgbModule.forRoot()
     ],
