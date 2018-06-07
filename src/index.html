@@ -20,8 +20,17 @@
             messageStyle: "none"
         });
     </script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <script>
+        var Module = {
+            locateFile: function (s) {
+                return 'assets/c/' + s;
+            }
+        };
+    </script>
+    <script src="assets/c/main.js"></script>
+
 </head>
 <body>
 <app-root></app-root>
