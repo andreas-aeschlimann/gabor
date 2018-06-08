@@ -10,6 +10,9 @@ void EMSCRIPTEN_KEEPALIVE fft(float *yReal, float *yImag, int m, int n);
 void EMSCRIPTEN_KEEPALIVE ifft(float *yReal, float *yImag, int m, int n);
 void _fft1(float *yReal, float *yImag, int n);
 void _fft2(float *yReal, float *yImag, int m, int n);
+void printArray(char *name, float complex z[], int size);
+void printSquareMatrix(char *name, float *z, int size);
+void printComplexSquareMatrix(char *name, float complex *z, int size);
 
 /**
  * Public method that calculates the 1D or 2D fast Fourier transform.
@@ -96,7 +99,7 @@ void EMSCRIPTEN_KEEPALIVE conv(float *y1, float *y2, float *yConv, int m, int n)
  * Public method that calculates the 2D fast Gabor convolution of an input
  * function and a Gabor filter of given params.
  */
-void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConv, int n, float xi, float sigma, float lambda, float theta, int amount) {
+void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConvSum, int n, float xi, float sigma, float lambda, float theta, int amount) {
 
     printf("Launching C method...\n");
 
@@ -104,6 +107,7 @@ void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConv, int n, float xi, float s
     int size = n*n;
 
     // Alloc data
+    //float complex *y1CM = malloc(size * sizeof(float complex));
     float complex *y1C = malloc(size * sizeof(float complex));
 
     // Assign real value of data
@@ -111,41 +115,85 @@ void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConv, int n, float xi, float s
         y1C[i] = y1[i];
     }
 
-    // Calculate Fourier transform of y1C First
-    float complex *y1CHat = malloc(n * n * sizeof(float complex));
-    fft2(y1C, y1CHat, n);
+    // Fix coords
+    //printComplexSquareMatrix("y1", y1CM, n);
+    //mirrorYCoordinate(y1CM, y1C, n);
+    //printComplexSquareMatrix("y1", y1C, n);
 
-    free(y1C);
+    //free(y1CM);
+
+    // Calculate Fourier transform of y1C First
+    float complex *y1Hat = malloc(n * n * sizeof(float complex));
+    fft2(y1C, y1Hat, n);
+
+    //free(y1C);
 
     for (int j = 0; j < amount; j++) {
 
         // Alloc data
-        float complex *y2C = malloc(size * sizeof(float complex));
-        float complex *yConvC = malloc(size * sizeof(float complex));
-        float complex *yConvCShifted = malloc(size * sizeof(float complex));
+        float complex *y2 = malloc(size * sizeof(float complex));
+        float complex *yConv = malloc(size * sizeof(float complex));
+        float complex *yConvShifted = malloc(size * sizeof(float complex));
 
         // Get filter data
         float pi = acos(-1.0);
-        normalizedFilter2(y2C, n, xi, sigma, lambda, theta + pi*j/amount);
+        normalizedFilter2(y2, n, xi, sigma, lambda, theta + pi*j/amount);
 
         // Do the convolution
-        conv2Hat(y2C, y1CHat, yConvC, n);
+        //printComplexSquareMatrix("f", y1C, n);
+        //printComplexSquareMatrix("gw", y2, n);
 
-        free(y1CHat);
-        free(y2C);
+        //for (int i = 0; i < size; i++) {
+        //    yConvC[i] = 0;
+        //}
+
+        //printComplexSquareMatrix("convBEFORE", yConvC, n);
+        conv2Hat(y2, y1Hat, yConv, n);
+        //printComplexSquareMatrix("convAFTER", yConvC, n);
+
+/*
+        // Calculate the FFT of the first vector
+        float complex *y2Hat = malloc(n * n * sizeof(float complex));
+        fft2(y2, y2Hat, n);
+
+        // Multiply in FFT space
+        float complex *yConvHat = malloc(n * n * sizeof(float complex));
+        for (int i = 0; i < n*n; i++) {
+            yConvHat[i] = y1Hat[i] * y2Hat[i];
+        }
+        //free(y1Hat);
+        free(y2Hat);
+
+        // Transform back
+        ifft2(yConvHat, yConv, n);
+
+        free(yConvHat);
+        free(y2);*/
 
         // Shift the values
-        translate2(yConvC, yConvCShifted, n, n/2, n/2);
+        translate2(yConv, yConvShifted, n, n/2, n/2);
+//printComplexSquareMatrix(yConvCShifted, n);
+        //printComplexSquareMatrix("convSHIFTED", yConvCShifted, n);
 
-        free(yConvC);
+        //free(yConv);
+
+        // Fix coords
+        //mirrorYCoordinate(yConvShifted, yConv, n);
+
+        float *yConvShiftedAbs = malloc(size * sizeof(float));
 
         // Assign real value of data
         for (int i = 0; i < size; i++) {
-            if (j == 0) yConv[i] = cabsf(yConvCShifted[i]);
-            else yConv[i] += cabsf(yConvCShifted[i]);
+            yConvShiftedAbs[i] = cabsf(yConvShifted[i]);
+            if (j == 0) yConvSum[i] = yConvShiftedAbs[i];
+            else yConvSum[i] += yConvShiftedAbs[i];
         }
 
-        free(yConvCShifted);
+        //printSquareMatrix("yConvShiftedAbs", yConvShiftedAbs, n);
+        //printSquareMatrix("yConvSumAbs", yConvSum, n);
+
+        free(yConvShifted);
+        free(yConvShiftedAbs);
 
     }
 
@@ -201,4 +249,35 @@ void _fft2(float *yReal, float *yImag, int m, int n) {
 
     free(yHat);
 
+}
+
+void printArray(char *name, float complex *z, int n) {
+    printf("%s = \n", name);
+    for (int i = 0; i < n; i++) {
+        printf("\t%f + %f i", creal(z[i]), cimag(z[i]));
+        printf("\n");
+    }
+    printf("]\n");
+}
+
+void printSquareMatrix(char *name, float *z, int n) {
+    printf("%s = \n", name);
+    for (int i = 0; i < n; i++) {
+        for (int j= 0; j < n; j++) {
+            printf("\t%f", z[i*n+j]);
+        }
+        printf("\n");
+    }
+    printf("]\n");
+}
+
+void printComplexSquareMatrix(char *name, float complex *z, int n) {
+    printf("%s = \n", name);
+    for (int i = 0; i < n; i++) {
+        for (int j= 0; j < n; j++) {
+            printf("\t%f + %f*i", creal(z[i*n+j]), cimag(z[i*n+j]));
+        }
+        printf("\n");
+    }
+    printf("]\n");
 }

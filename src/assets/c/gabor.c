@@ -32,10 +32,10 @@ void normalizedFilter2(float complex *gw, int n, float xi, float sigma, float la
     // Now normalize the real and imaginary values
 
     // First, get all sums
-    float realSumPos = 0;
-    float realSumNeg = 0;
-    float imagSumPos = 0;
-    float imagSumNeg = 0;
+    float realSumPos = 0.0;
+    float realSumNeg = 0.0;
+    float imagSumPos = 0.0;
+    float imagSumNeg = 0.0;
     for (int y = 0; y < n; y++) {
         for (int x = 0; x < n; x++) {
             float r = crealf(gw[y*n+x]);
@@ -57,16 +57,17 @@ void normalizedFilter2(float complex *gw, int n, float xi, float sigma, float la
     float realSum = (realSumPos+realSumNeg) / 2.0;
     float imagSum = (imagSumPos+imagSumNeg) / 2.0;
 
-    float realPosFact = 0;
-    float realNegFact = 0;
-    float imagPosFact = 0;
-    float imagNegFact = 0;
+    float realPosFact = 0.0;
+    float realNegFact = 0.0;
+    float imagPosFact = 0.0;
+    float imagNegFact = 0.0;
 
     if (realSum > 0) {
         realPosFact = realSumPos / realSum;
         realNegFact = realSumNeg / realSum;
     }
-    if (imagSum > 0) {
+
+    if (imagSumPos > 0 || imagSumNeg > 0) {
         imagPosFact = imagSumPos / imagSum;
         imagNegFact = imagSumNeg / imagSum;
     }
@@ -74,20 +75,43 @@ void normalizedFilter2(float complex *gw, int n, float xi, float sigma, float la
     // Adjust the values
     for (int y = 0; y < n; y++) {
         for (int x = 0; x < n; x++) {
+
             float r = crealf(gw[y*n+x]);
             float i = cimagf(gw[y*n+x]);
+
             if (r > 0) {
-                gw[y*n+x] *= realNegFact;
+                r *= realNegFact;
             } else if (r < 0) {
-                gw[y*n+x] *= realPosFact;
+                r *= realPosFact;
             }
             if (i > 0) {
-                gw[y*n+x] *= imagNegFact;
+                i *= imagNegFact;
             } else if (i < 0) {
-                gw[y*n+x] *= imagPosFact;
+                i *= imagPosFact;
             }
+
+            gw[y*n+x] = r + i*I;
+
         }
     }
+
+}
+
+/**
+ * Fixes the coordinates of an input image by mirroring all y-values
+ */
+void mirrorYCoordinate(float complex *f, float complex *f2, int n) {
+    //float complex *fTemp = malloc(n * n * sizeof(float complex));
+    for (int y = 0; y < n; y++) {
+        for (int x = 0; x < n; x++) {
+            f2[y*n+x] = f[y*n+(n-1-x)];
+            //printf("%f + %f*i", crealf(fTemp[y*n+x]), cimagf(fTemp[y*n+x]));
+        }
+    }
+    //printf("\n%f + %f*i", crealf(f[0]), cimagf(f[0]));
+    //printf("%f + %f*i", crealf(fTemp[0]), cimagf(fTemp[0]));
+
+    //printf("%f + %f*i", crealf(f[0]), cimagf(f[0]));
 
 }
 

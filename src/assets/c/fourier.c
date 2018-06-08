@@ -233,13 +233,25 @@ void conv2(float complex *y1, float complex *y2, float complex *yConv, int n) {
 
 }
 
+
+void printComplexSquareMatrix2(float complex *z, int n) {
+    printf("MATRIX[%i][%i] = [\n", n, n);
+    for (int i = 0; i < n; i++) {
+        for (int j= 0; j < n; j++) {
+            printf("\t%f + %f*i", creal(z[i*n+j]), cimag(z[i*n+j]));
+        }
+        printf("\n");
+    }
+    printf("]\n");
+}
+
 /**
  * Calculates the 2D convolution of two arrays representing a matrix,
  * where the second array already is in Fourier space.
  */
 void conv2Hat(float complex *y1, float complex *y2Hat, float complex *yConv, int n) {
 
-    // Calculate the FFT of the first vectors
+    // Calculate the FFT of the first vector
     float complex *y1Hat = malloc(n * n * sizeof(float complex));
 
     fft2(y1, y1Hat, n);

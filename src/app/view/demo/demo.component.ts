@@ -79,6 +79,12 @@ export class DemoComponent implements OnInit {
      */
     progressBarValue: number = 100;
 
+    /**
+     * Background worker for the math
+     */
+    backgroundWorker: Worker;
+
+
 
     ////////////////
     // IMAGE DATA //
@@ -130,7 +136,7 @@ export class DemoComponent implements OnInit {
 
     /**
      * Adjusts the image size of both canvases.
-     * @param {number} imageSize
+     * @param imageSize in pixel
      */
     adjustImageSize(imageSize: number) {
         this.inputCanvasImage.size = imageSize;
@@ -158,12 +164,18 @@ export class DemoComponent implements OnInit {
      */
     saveUploadedImage(event: Event) {
 
-        const fileReader: FileReader = new FileReader();
-        fileReader.onload = (progressEvent: ProgressEvent) => {
-            this.saveImage(this.inputCanvasImage, (<any>progressEvent.target).result);
-            this.saveImage(this.outputCanvasImage, (<any>progressEvent.target).result);
-        };
-        fileReader.readAsDataURL((<any>event).target.files[0]);
+        try {
+
+            const fileReader: FileReader = new FileReader();
+            fileReader.onload = (progressEvent: ProgressEvent) => {
+                this.saveImage(this.inputCanvasImage, (<any>progressEvent.target).result);
+                this.saveImage(this.outputCanvasImage, (<any>progressEvent.target).result);
+            };
+            fileReader.readAsDataURL((<any>event).target.files[0]);
+
+        } catch (e) {
+            console.error(e);
+        }
 
     }
 
@@ -191,30 +203,35 @@ export class DemoComponent implements OnInit {
     //////////////////
 
 
-    convoluteImage_() {
-        // Get image pixels of input image
-        const pixels: number[] = [1, 2, 3, 2, 1, 2, 3, 4, 5, 2, 7, 3, 8, 2, 5, 8];
-
-        console.log(pixels);
-        console.log(this.findMinMax(pixels));
-
-        // Do the convolution
-        const newPixels: number[] = Gabor.fgc2(pixels, this.xi, this.sigma, this.lambda, this.theta, this.amount);
-
-        console.log(newPixels);
-        console.log(this.findMinMax(newPixels));
-
-    }
-
     /**
      * Calculates the convolution using the methods from C/WebAssembly code.
      */
-    async convoluteImage() {
+    convoluteImage() {
+
+/*
+        this.backgroundWorker = new Worker("assets/js/test.js");
+
+        const pixels = new Float32Array([0, 1, 2, 4, 8, 1, 4, 2, 3, 9, 1, 2, 9, 2, 4, 0]);
+        console.log(pixels);
+
+        this.backgroundWorker.onmessage = (event) => {
+            console.log(event.data);
+            this.backgroundWorker.terminate();
+        };
+        this.backgroundWorker.onerror = (event) => {
+            console.error(event);
+            this.backgroundWorker.terminate();
+        };
+
+        this.backgroundWorker.postMessage({ f: pixels, xi: this.xi, sigma: this.sigma, lambda: this.lambda, theta: (2 * Math.PI * this.theta / 360), amount: this.amount });
+
+*/
+
 
         this.progressBarValue = 0;
 
         // Get image pixels of input image
-        let pixels: number[] = Array.from(this.inputCanvasImage.getGrayScalePixels());
+        const pixels: Float32Array = new Float32Array(this.inputCanvasImage.getGrayScalePixels());
 
         //pixels = pixels.map(v => v/255);
 
@@ -226,8 +243,8 @@ export class DemoComponent implements OnInit {
 
         this.progressBarValue = 5;
 
+        this.backgroundWorker = new Worker("assets/js/test.js");
 
-        let myWorker: Worker = new Worker("assets/js/test.js");
 
         /**
          * Calculated time to spend:
@@ -235,37 +252,31 @@ export class DemoComponent implements OnInit {
          */
         const subscription: Subscription = interval(1000 * 4 * (this.imageSize/1024)*(this.imageSize/1024) * this.amount / 30).subscribe(
             _ => {
-                console.log("timer");
                 this.progressBarValue += 3;
             }
         );
 
-        myWorker.onmessage = (event) => {
+        //console.log(pixels);
+        //console.log(this.findMinMax(pixels));
+
+        this.backgroundWorker.onmessage = (event) => {
             subscription.unsubscribe();
-            console.log(event.data);
+            //console.log(event.data);
             const newPixels: Uint8ClampedArray = new Uint8ClampedArray(event.data);
             this.progressBarValue = 95;
             this.outputCanvasImage.setGrayScalePixels(newPixels);
-            myWorker.terminate();
+            this.backgroundWorker.terminate();
             this.progressBarValue = 100;
+            //console.log(this.findMinMax(event.data));
         };
-        myWorker.onerror = (event) => {
+        this.backgroundWorker.onerror = (event) => {
             subscription.unsubscribe();
             console.error(event);
-            myWorker.terminate();
+            this.backgroundWorker.terminate();
             this.progressBarValue = 100;
         };
 
-        myWorker.postMessage({ f: pixels, xi: this.xi, sigma: this.sigma, lambda: this.lambda, theta: (-2 * Math.PI * this.theta / 360), amount: this.amount });
-
-
-
-        //const newPixels: number[] = await Gabor.fgc2(pixels, this.xi, this.sigma, this.lambda, (-2 * Math.PI * this.theta / 360), this.amount);
-
-        //console.log(this.findMinMax(newPixels));
-
-        // Set image pixels of output image
-        //this.outputCanvasImage.setGrayScalePixels(new Uint8ClampedArray(newPixels));
+        this.backgroundWorker.postMessage({ f: pixels, xi: this.xi, sigma: this.sigma, lambda: this.lambda, theta: (-2 * Math.PI * this.theta / 360), amount: this.amount });
 
     }
 

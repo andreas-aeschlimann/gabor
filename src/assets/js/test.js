@@ -41,14 +41,13 @@ var fgt2 = function() {
     }
 
     // Generate float arrays
-    const f2 = new Float32Array(f);
     var fConv = new Float32Array(f.length);
 
     // Call c code
     try {
-        const buffer1 = Module._malloc(f2.length * f2.BYTES_PER_ELEMENT);
+        const buffer1 = Module._malloc(f.length * f.BYTES_PER_ELEMENT);
         const buffer2 = Module._malloc(fConv.length * fConv.BYTES_PER_ELEMENT);
-        Module.HEAPF32.set(f2, buffer1 >> 2);
+        Module.HEAPF32.set(f, buffer1 >> 2);
         Module.HEAPF32.set(fConv, buffer2 >> 2);
 
         Module.ccall(
@@ -66,6 +65,6 @@ var fgt2 = function() {
         console.error(e);
     }
 
-    postMessage(Array.from(fConv));
+    postMessage(fConv);
 
 }

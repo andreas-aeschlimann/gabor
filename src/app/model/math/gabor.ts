@@ -45,6 +45,8 @@ export class Gabor {
 
         return Array.from(fConv);*/
 
+        return [];
+
     }
 
 }

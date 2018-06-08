@@ -56,7 +56,7 @@ export class CanvasImage {
             (observer) => {
                 const image: HTMLImageElement = new Image();
                 image.onload = () => {
-                    this.context.drawImage(image, 0, 0);
+                    this.context.drawImage(image, 0, 0, this.size, this.size);
                     observer.next(true);
                     observer.complete();
                 };
