@@ -4,6 +4,8 @@ export class Gabor {
 
     static fgc2(f: number[], xi: number, sigma: number, lambda: number, theta: number, amount: number): number[] {
 
+        /*
+
         // Check size
         if (f.length <= 0) {
             console.error("Input data length is 0.");
@@ -41,7 +43,7 @@ export class Gabor {
             console.error(e);
         }
 
-        return Array.from(fConv);
+        return Array.from(fConv);*/
 
     }
 

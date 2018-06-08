@@ -4,13 +4,13 @@
         <p>This page allows the mathematical convolution of an image with a Gabor filter. Please refer to the <span class="link btn-link" (click)="openDocs()">docs</span> to learn more about the theory and the involved parameters.</p>
 
         <h4 class="mt-4 mb-3">Input image</h4>
-        <canvas #inputCanvas width="1024" height="1024"></canvas>
+        <canvas #inputCanvas width="{{ inputCanvasImage.size }}" height="{{ inputCanvasImage.size }}"></canvas>
 
         <h4 class="mt-4 mb-3">Output image</h4>
         <p *ngIf="progressBarValue > 0">
-            <ngb-progressbar [showValue]="true" type="primary" [value]="progressBarValue"></ngb-progressbar>
+            <ngb-progressbar [showValue]="false" type="primary" [value]="progressBarValue"></ngb-progressbar>
         </p>
-        <canvas #outputCanvas width="1024" height="1024"></canvas>
+        <canvas #outputCanvas width="{{ outputCanvasImage.size }}" height="{{ outputCanvasImage.size }}"></canvas>
 
     </div>
     <div class="col-12 col-sm-6 col-lg-4">
@@ -26,6 +26,16 @@
                 <div class="list-group-item">
                     <p class="font-weight-bold">Image selection</p>
                     <p class="card-text">Select an image from the list or upload your own.</p>
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <select class="form-control" [(ngModel)]="imageSize" (ngModelChange)="adjustImageSize(imageSize)">
+                                <option [ngValue]="256">256*256 pixels</option>
+                                <option [ngValue]="512">512*512 pixels</option>
+                                <option [ngValue]="1024" selected>1024*1024 pixels</option>
+                                <option [ngValue]="2048">2048*2048 pixels</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <div class="col-12">
                             <select class="form-control" [(ngModel)]="image" (ngModelChange)="saveListedImage(image)">
@@ -84,7 +94,7 @@
             </div>
             <div class="list-group list-group-flush">
                 <div class="list-group-item text-center">
-                    <button class="btn btn-outline-primary" (click)="convoluteImage()">Generate output image</button>
+                    <button class="btn btn-outline-primary" (click)="convoluteImage()" [disabled]="progressBarValue > 0 && progressBarValue < 100">Generate output image</button>
                 </div>
             </div>
         </div>

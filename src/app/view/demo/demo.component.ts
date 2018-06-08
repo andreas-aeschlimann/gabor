@@ -1,13 +1,15 @@
 import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {Event, Router} from "@angular/router";
 import {CanvasImage} from "../../model/other/canvas-image";
-import {Gabor} from '../../model/math/gabor';
-import {Observable} from 'rxjs';
+import {Gabor} from "../../model/math/gabor";
+import {interval, Observable, Subscription, timer} from 'rxjs';
+declare var Module: any;
 
 @Component({
     selector: "app-demo",
     templateUrl: "./demo.component.html",
-    styleUrls: ["./demo.component.scss"]
+    styleUrls: ["./demo.component.scss"],
+    providers: []
 })
 export class DemoComponent implements OnInit {
 
@@ -60,12 +62,17 @@ export class DemoComponent implements OnInit {
     /**
      * The input canvas image
      */
-    private inputCanvasImage: CanvasImage;
+    inputCanvasImage: CanvasImage;
 
     /**
      * The output canvas image
      */
-    private outputCanvasImage: CanvasImage;
+    outputCanvasImage: CanvasImage;
+
+    /**
+     * The size of the canvas
+     */
+    imageSize: number = 1024;
 
     /**
      * Progress bar value
@@ -82,9 +89,9 @@ export class DemoComponent implements OnInit {
      * An image list
      */
     images: any[] = [
-        { name: "Domestic cat", url: "assets/images/input/cat.jpg" },
-        { name: "Synthetic image", url: "assets/images/input/synthetic.png" },
-        { name: "Upload own image", url: "" }
+        {name: "Domestic cat", url: "assets/images/input/cat.jpg"},
+        {name: "Synthetic image", url: "assets/images/input/synthetic.png"},
+        {name: "Upload own image", url: ""}
     ];
 
     /**
@@ -110,8 +117,8 @@ export class DemoComponent implements OnInit {
      * NgOnInit.
      */
     ngOnInit() {
-        this.inputCanvasImage = new CanvasImage(this.inputCanvas);
-        this.outputCanvasImage = new CanvasImage(this.outputCanvas);
+        this.inputCanvasImage = new CanvasImage(this.inputCanvas, 1024);
+        this.outputCanvasImage = new CanvasImage(this.outputCanvas, 1024);
         this.saveListedImage(this.image);
     }
 
@@ -119,6 +126,17 @@ export class DemoComponent implements OnInit {
     ////////////////////
     // CANVAS METHODS //
     ////////////////////
+
+
+    /**
+     * Adjusts the image size of both canvases.
+     * @param {number} imageSize
+     */
+    adjustImageSize(imageSize: number) {
+        this.inputCanvasImage.size = imageSize;
+        this.outputCanvasImage.size = imageSize;
+        this.saveListedImage(this.image);
+    }
 
 
     /**
@@ -139,8 +157,6 @@ export class DemoComponent implements OnInit {
      * @param event
      */
     saveUploadedImage(event: Event) {
-
-        console.log(event);
 
         const fileReader: FileReader = new FileReader();
         fileReader.onload = (progressEvent: ProgressEvent) => {
@@ -175,7 +191,6 @@ export class DemoComponent implements OnInit {
     //////////////////
 
 
-
     convoluteImage_() {
         // Get image pixels of input image
         const pixels: number[] = [1, 2, 3, 2, 1, 2, 3, 4, 5, 2, 7, 3, 8, 2, 5, 8];
@@ -196,26 +211,64 @@ export class DemoComponent implements OnInit {
      */
     async convoluteImage() {
 
+        this.progressBarValue = 0;
 
-                // Get image pixels of input image
-                let pixels: number[] = Array.from(this.inputCanvasImage.getGrayScalePixels());
+        // Get image pixels of input image
+        let pixels: number[] = Array.from(this.inputCanvasImage.getGrayScalePixels());
 
-                //pixels = pixels.map(v => v/255);
+        //pixels = pixels.map(v => v/255);
 
-                //console.log(pixels);
-                //console.log(this.findMinMax(pixels));
+        //console.log(pixels);
+        //console.log(this.findMinMax(pixels));
 
-                // Do the convolution
-                //console.log((2 * Math.PI * this.theta / 360));
-                const newPixels: number[] = await Gabor.fgc2(pixels, this.xi, this.sigma, this.lambda, (-2 * Math.PI * this.theta / 360), this.amount);
+        // Do the convolution
+        //console.log((2 * Math.PI * this.theta / 360));
 
-                //console.log(this.findMinMax(newPixels));
+        this.progressBarValue = 5;
 
-                // Set image pixels of output image
-                this.outputCanvasImage.setGrayScalePixels(new Uint8ClampedArray(newPixels));
-;
+
+        let myWorker: Worker = new Worker("assets/js/test.js");
+
+        /**
+         * Calculated time to spend:
+         * 1024: amount * 3s
+         */
+        const subscription: Subscription = interval(1000 * 4 * (this.imageSize/1024)*(this.imageSize/1024) * this.amount / 30).subscribe(
+            _ => {
+                console.log("timer");
+                this.progressBarValue += 3;
+            }
+        );
+
+        myWorker.onmessage = (event) => {
+            subscription.unsubscribe();
+            console.log(event.data);
+            const newPixels: Uint8ClampedArray = new Uint8ClampedArray(event.data);
+            this.progressBarValue = 95;
+            this.outputCanvasImage.setGrayScalePixels(newPixels);
+            myWorker.terminate();
+            this.progressBarValue = 100;
+        };
+        myWorker.onerror = (event) => {
+            subscription.unsubscribe();
+            console.error(event);
+            myWorker.terminate();
+            this.progressBarValue = 100;
+        };
+
+        myWorker.postMessage({ f: pixels, xi: this.xi, sigma: this.sigma, lambda: this.lambda, theta: (-2 * Math.PI * this.theta / 360), amount: this.amount });
+
+
+
+        //const newPixels: number[] = await Gabor.fgc2(pixels, this.xi, this.sigma, this.lambda, (-2 * Math.PI * this.theta / 360), this.amount);
+
+        //console.log(this.findMinMax(newPixels));
+
+        // Set image pixels of output image
+        //this.outputCanvasImage.setGrayScalePixels(new Uint8ClampedArray(newPixels));
 
     }
+
 
     findMinMax(arr) {
         let min = arr[0], max = arr[0];

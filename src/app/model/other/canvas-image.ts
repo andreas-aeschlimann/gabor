@@ -1,20 +1,48 @@
-import { ElementRef } from "@angular/core";
+import {ElementRef} from "@angular/core";
 import {Observable} from "rxjs";
-//import { Fourier } from "../math/fourier";
 
 export class CanvasImage {
 
     /**
      * Canvas context
      */
-    private context: CanvasRenderingContext2D;
+    public context: CanvasRenderingContext2D;
+
+    /**
+     * Canvas size
+     * @type {number}
+     * @private
+     */
+    private _size: number = 1024;
+
+    /**
+     * Get the canvas size
+     * @returns {number}
+     */
+    get size(): number {
+        return this._size;
+    }
+
+    /**
+     * Set the canvas size
+     * @param {number} size
+     */
+    set size(size: number) {
+        if (size > 0 && size <= 4096 && Math.log2(size) % 1 === 0) {
+            this._size = size;
+        } else {
+            console.error(JSON.stringify(size) + " is not a valid size for the canvas.");
+        }
+    }
 
     /**
      * Constructor.
      * @param {ElementRef} canvas
+     * @param {number} size
      */
-    constructor(private canvas: ElementRef) {
+    constructor(public canvas: ElementRef, size: number) {
         this.context = (<HTMLCanvasElement> canvas.nativeElement).getContext("2d");
+        this.size = size;
     }
 
     /**
