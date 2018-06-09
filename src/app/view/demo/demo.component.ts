@@ -96,6 +96,9 @@ export class DemoComponent implements OnInit {
      */
     images: any[] = [
         {name: "Domestic cat", url: "assets/images/input/cat.jpg"},
+        {name: "USS Enterprise NCC-1701", url: "assets/images/input/enterprise.png"},
+        {name: "Lamp", url: "assets/images/input/lamp.png"},
+        {name: "Lena", url: "assets/images/input/lena.jpg"},
         {name: "Synthetic image", url: "assets/images/input/synthetic.png"},
         {name: "Upload own image", url: ""}
     ];
