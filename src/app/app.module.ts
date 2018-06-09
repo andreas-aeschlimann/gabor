@@ -35,7 +35,10 @@ const appRoutes: Routes = [
         FormsModule,
         RouterModule.forRoot(
             appRoutes,
-            {enableTracing: false}
+            {
+                enableTracing: false,
+                useHash: true
+            }
         ),
         NgbModule.forRoot()
     ],
