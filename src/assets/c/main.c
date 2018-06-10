@@ -95,112 +95,6 @@ void EMSCRIPTEN_KEEPALIVE conv(float *y1, float *y2, float *yConv, int m, int n)
 
 }
 
-/**
- * Public method that calculates the 2D fast Gabor convolution of an input
- * function and a Gabor filter of given params.
- */
-void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConvSum, int n, float xi, float sigma, float lambda, float theta, int amount) {
-
-    printf("Launching C method...\n");
-
-    // Set dimension
-    int size = n*n;
-
-    // Alloc data
-    //float complex *y1CM = malloc(size * sizeof(float complex));
-    float complex *y1C = malloc(size * sizeof(float complex));
-
-    // Assign real value of data
-    for (int i = 0; i < size; i++) {
-        y1C[i] = y1[i];
-    }
-
-    // Fix coords
-    //printComplexSquareMatrix("y1", y1CM, n);
-    //mirrorYCoordinate(y1CM, y1C, n);
-    //printComplexSquareMatrix("y1", y1C, n);
-
-    //free(y1CM);
-
-    // Calculate Fourier transform of y1C First
-    float complex *y1Hat = malloc(n * n * sizeof(float complex));
-    fft2(y1C, y1Hat, n);
-
-    //free(y1C);
-
-    for (int j = 0; j < amount; j++) {
-
-        // Alloc data
-        float complex *y2 = malloc(size * sizeof(float complex));
-        float complex *yConv = malloc(size * sizeof(float complex));
-        float complex *yConvShifted = malloc(size * sizeof(float complex));
-
-        // Get filter data
-        float pi = acos(-1.0);
-        normalizedFilter2(y2, n, xi, sigma, lambda, theta + pi*j/amount);
-
-        // Do the convolution
-        //printComplexSquareMatrix("f", y1C, n);
-        //printComplexSquareMatrix("gw", y2, n);
-
-        //for (int i = 0; i < size; i++) {
-        //    yConvC[i] = 0;
-        //}
-
-        //printComplexSquareMatrix("convBEFORE", yConvC, n);
-        conv2Hat(y2, y1Hat, yConv, n);
-        //printComplexSquareMatrix("convAFTER", yConvC, n);
-
-/*
-        // Calculate the FFT of the first vector
-        float complex *y2Hat = malloc(n * n * sizeof(float complex));
-        fft2(y2, y2Hat, n);
-
-        // Multiply in FFT space
-        float complex *yConvHat = malloc(n * n * sizeof(float complex));
-        for (int i = 0; i < n*n; i++) {
-            yConvHat[i] = y1Hat[i] * y2Hat[i];
-        }
-        //free(y1Hat);
-        free(y2Hat);
-
-        // Transform back
-        ifft2(yConvHat, yConv, n);
-
-        free(yConvHat);
-        free(y2);*/
-
-        // Shift the values
-        translate2(yConv, yConvShifted, n, n/2, n/2);
-//printComplexSquareMatrix(yConvCShifted, n);
-        //printComplexSquareMatrix("convSHIFTED", yConvCShifted, n);
-
-        //free(yConv);
-
-        // Fix coords
-        //mirrorYCoordinate(yConvShifted, yConv, n);
-
-        float *yConvShiftedAbs = malloc(size * sizeof(float));
-
-        // Assign real value of data
-        for (int i = 0; i < size; i++) {
-            yConvShiftedAbs[i] = cabsf(yConvShifted[i]);
-            if (j == 0) yConvSum[i] = yConvShiftedAbs[i];
-            else yConvSum[i] += yConvShiftedAbs[i];
-        }
-
-        //printSquareMatrix("yConvShiftedAbs", yConvShiftedAbs, n);
-        //printSquareMatrix("yConvSumAbs", yConvSum, n);
-
-        free(yConvShifted);
-        free(yConvShiftedAbs);
-
-    }
-
-    printf("Done!\n");
-
-}
-
 void _fft1(float *yReal, float *yImag, int n) {
 
     // Alloc complex vector
@@ -248,6 +142,100 @@ void _fft2(float *yReal, float *yImag, int m, int n) {
     }
 
     free(yHat);
+
+}
+
+/**
+ * Public method that calculates the 2D fast Gabor convolution of an input
+ * function and a Gabor filter of given params.
+ */
+void EMSCRIPTEN_KEEPALIVE normalizedFilter2(float *gReal, float *gImag, int n, float xi, float sigma, float lambda, float theta) {
+
+    printf("Launching C method...\n");
+
+    // Set dimension
+    int size = n*n;
+
+    // Alloc data
+    float complex *g = malloc(size * sizeof(float complex));
+
+    // Get the filter
+    _normalizedFilter2(g, n, xi, sigma, lambda, theta);
+
+    // Assign the real and imag
+    for (int i = 0; i < size; i++) {
+        gReal[i] = crealf(g[i]);
+        gImag[i] = cimagf(g[i]);
+    }
+
+    free(g);
+
+    printf("Done!\n");
+
+}
+
+/**
+ * Public method that calculates the 2D fast Gabor convolution of an input
+ * function and a Gabor filter of given params.
+ */
+void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConvSum, int n, float xi, float sigma, float lambda, float theta, int amount) {
+
+    printf("Launching C method...\n");
+
+    // Set dimension
+    int size = n*n;
+
+    // Alloc data
+    float complex *y1C = malloc(size * sizeof(float complex));
+
+    // Assign real value of data
+    for (int i = 0; i < size; i++) {
+        y1C[i] = y1[i];
+    }
+
+    // Calculate Fourier transform of y1C First
+    float complex *y1Hat = malloc(n * n * sizeof(float complex));
+    fft2(y1C, y1Hat, n);
+
+    free(y1C);
+
+    for (int j = 0; j < amount; j++) {
+
+        // Alloc data
+        float complex *y2 = malloc(size * sizeof(float complex));
+        float complex *yConv = malloc(size * sizeof(float complex));
+        float complex *yConvShifted = malloc(size * sizeof(float complex));
+
+        // Get filter data
+        float pi = acos(-1.0);
+        _normalizedFilter2(y2, n, xi, sigma, lambda, theta + pi*j/amount);
+
+        conv2Hat(y2, y1Hat, yConv, n);
+
+        free(y2);
+
+        // Shift the values
+        _translate2(yConv, yConvShifted, n, n/2, n/2);
+
+        free(yConv);
+
+        float *yConvShiftedAbs = malloc(size * sizeof(float));
+
+        // Assign real value of data
+        for (int i = 0; i < size; i++) {
+            yConvShiftedAbs[i] = cabsf(yConvShifted[i]);
+            if (j == 0) yConvSum[i] = yConvShiftedAbs[i];
+            else yConvSum[i] += yConvShiftedAbs[i];
+        }
+
+        free(yConvShifted);
+        free(yConvShiftedAbs);
+
+    }
+
+    free(y1Hat);
+
+    printf("Done!\n");
 
 }
 

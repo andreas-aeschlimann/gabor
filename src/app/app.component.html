@@ -1,24 +1,29 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow">
-    <span class="navbar-brand link font-weight-bold pr-5" (click)="openPage('demo')">Gabor Filters</span>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar fixed-top navbar-expand-sm navbar-light bg-white shadow">
+    <span class="navbar-brand link font-weight-bold pr-5" (click)="openPage('demo')">Gabor filters</span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon" (click)="collapsed = !collapsed"></span>
     </button>
     <div class="navbar-collapse" [ngClass]="collapsed ? 'collapse' : ''" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <span class="nav-link link text-primary" href="#" (click)="openPage('demo')">Demo</span>
+                <span class="nav-link link text-primary" (click)="openPage('demo')">Demo</span>
             </li>
             <li class="nav-item">
-                <span class="nav-link link text-primary" href="#" (click)="openPage('docs')">Docs</span>
+                <span class="nav-link link text-primary" (click)="openPage('docs')">Docs</span>
             </li>
             <li class="nav-item">
-                <span class="nav-link link text-primary" href="#" (click)="openPage('about')">About</span>
+                <span class="nav-link link text-primary" (click)="openPage('about')">About</span>
             </li>
         </ul>
     </div>
+    <div class="status">
+        <ngb-progressbar [showValue]="false" type="primary" [height]="'2px'"
+                         [value]="progressService.percentage"></ngb-progressbar>
+    </div>
 </nav>
 
-<div class="container">
+<div class="container mt-5">
 
     <div class="page pt-5 pb-5">
         <router-outlet></router-outlet>

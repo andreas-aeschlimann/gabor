@@ -1,5 +1,7 @@
 import {Component} from "@angular/core";
 import {Router} from "@angular/router";
+import {ImageProcessingService} from './model/math/image-processing.service';
+import {ProgressService} from './model/math/progress.service';
 
 @Component({
     selector: "app-root",
@@ -8,12 +10,22 @@ import {Router} from "@angular/router";
 })
 export class AppComponent {
 
+    /**
+     * Determines whether the nav bar is collapsed or not
+     */
     collapsed: boolean = true;
-    
-    constructor(private router: Router) {
-        
-    }
 
+    /**
+     * Constructor.
+     * @param router
+     * @param progressService
+     */
+    constructor(private router: Router, public progressService: ProgressService) {}
+
+    /**
+     * Opens an internal page
+     * @param url
+     */
     openPage(url: string) {
         this.collapsed = true;
         this.router.navigate(["/" + url]);

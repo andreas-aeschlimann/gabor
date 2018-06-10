@@ -5,7 +5,7 @@ var Module = {
         return '../c/' + s;
     },
     onRuntimeInitialized: function() {
-        fgt2();
+        gaborConvolution2();
     }
 };
 
@@ -27,7 +27,7 @@ var onmessage = function(messageEvent) {
     amount = messageEvent.data.amount;
 }
 
-var fgt2 = function() {
+var gaborConvolution2 = function() {
 
     // Check size
     if (f.length <= 0) {
@@ -41,7 +41,7 @@ var fgt2 = function() {
     }
 
     // Generate float arrays
-    var fConv = new Float32Array(f.length);
+    var fConv = new Float32Array(f.length); // convoluted image
 
     // Call c code
     try {
@@ -65,6 +65,6 @@ var fgt2 = function() {
         console.error(e);
     }
 
-    postMessage(fConv);
+    postMessage({fConv: fConv});
 
 }

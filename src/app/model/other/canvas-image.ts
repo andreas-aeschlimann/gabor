@@ -125,13 +125,17 @@ export class CanvasImage {
             return false;
         }
 
+        const minMax: number[] = this.findMinMax(pixels);
+        const diff: number = minMax[1] - minMax[0];
+        const scale: number = diff > 0 ? 256.0 / diff : 1;
+
         let j: number = 0;
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const i: number = (y * 4) * width + x * 4;
-                imageData.data[i] = pixels[j];
-                imageData.data[i + 1] = pixels[j];
-                imageData.data[i + 2] = pixels[j];
+                imageData.data[i] = scale * ( pixels[j] - minMax[0] );
+                imageData.data[i + 1] = imageData.data[i];
+                imageData.data[i + 2] = imageData.data[i];
                 j++;
             }
         }
@@ -141,6 +145,20 @@ export class CanvasImage {
         }
 
         return true;
+
+    }
+
+    private findMinMax(pixels: Uint8ClampedArray): number[] {
+
+        let min: number = pixels[0], max: number = pixels[0];
+
+        for (let i = 0, len = pixels.length; i < len; i++) {
+            const v = pixels[i];
+            min = (v < min) ? v : min;
+            max = (v > max) ? v : max;
+        }
+
+        return [min, max];
 
     }
 

@@ -18,6 +18,15 @@
             If you have problems, please make sure your browser is up-to-date.
         </div>
 
+        <h4 class="mt-4">Mathematical background</h4>
+        <p>
+            Our web application is the result of a master thesis at <a href="https://www.unibas.ch">University of Basel</a> written by <a routerLink="/about">Andreas Aeschlimann</a>.
+            The thesis provides a mathematical background for the Gabor analysis and explains the algorithms used on this page.
+            You may download PDF below:
+        </p>
+        <a class="btn btn-outline-primary mt-2" href="assets/docs/GaborTransform.pdf">Gabor Transform and Vision</a>
+
+
         <h4 class="mt-4">Quick introduction to Gabor filters</h4>
         <p>
             Assume that we have a grayscale input image with <span [appMathJax]="'$n$'"></span> pixels of width and height.
@@ -26,10 +35,10 @@
         <p>
             then <span [appMathJax]="'$f(x, y)$'"></span> is the grayscale value any pixel <span [appMathJax]="'$(x, y) \\in \\mathbb{Z}_n \\times \\mathbb{Z}_n$'"></span>.
         </p>
-        <p class="text-indent">
-            We define a (centered and semi-discrete) Gabor filter as
+        <p>
+            We define a (centered and semi-discrete) Gabor filter to be a product of a Gaussian function and a sinusoid, that is
         </p>
-        <p [appMathJax]="'$$g(x, y) = \\exp \\left( -\\tfrac{x\'^2 + \\xi^2 y\'^2}{2 \\sigma^2} \\right) \\exp \\left(2 \\pi i \\tfrac{x\'}{\\lambda} \\right)$$'"></p>
+        <p [appMathJax]="'$$g(x, y) = \\exp \\left( -\\tfrac{x\'^2 + \\xi^2 y\'^2}{2 \\sigma^2} \\right) \\exp \\left(2 \\pi i \\tfrac{x\'}{\\lambda} \\right),$$'"></p>
         <p>
             with the coordinate transformation
         </p>
@@ -40,11 +49,11 @@
             These parameters may be freely chosen on the <a routerLink="/demo">demo page</a> before generating an output image.
         </p>
         <p class="text-indent">
-            The resulting image on the <a routerLink="/demo">demo page</a> is the absolute part of the discrete convolution of the input image and the selected Gabor filter, that is
+            The resulting image on the <a routerLink="/demo">demo page</a> is the absolute part of the discrete convolution of the input image and the selected Gabor filter:
         </p>
         <p [appMathJax]="'$$|(f * g)(x, y)|, \\hspace{0.5cm} (x, y) \\in \\mathbb{Z}_n \\times \\mathbb{Z}_n.$$'"></p>
         <p>
-            This convolution is motivated by the Gabor transform, we thus refer to the master thesis for further reading.
+            This convolution is motivated by the Gabor transform, we thus refer to the <a href="assets/docs/GaborTransform.pdf">master thesis</a> for further reading.
         </p>
 
         <h4 class="mt-4">Parameters on the demo page</h4>
@@ -80,14 +89,6 @@
                 In that case, the generated output image is the sum of all resulting <span [appMathJax]="'$N$'"></span> convolutions <span [appMathJax]="'$\\sum |f*g_k|$'"></span>.
             </li>
         </ul>
-
-        <h4 class="mt-4">Mathematical theory</h4>
-        <p>
-            This web application is the result of a Master thesis at <a href="https://www.unibas.ch">University of Basel</a> written by <a routerLink="/about">Andreas Aeschlimann</a>.
-            You may download the Master thesis about the Gabor transform and Gabor filters below.
-            It provides a mathematical background for the Gabor analysis and explains the algorithms used on this page.
-        </p>
-        <a class="btn btn-outline-primary mt-4" href="assets/docs/GaborTransform.pdf">Gabor Transform and Vision</a>
 
     </div>
 

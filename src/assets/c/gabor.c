@@ -2,12 +2,13 @@
 #import <stdlib.h>
 #include <complex.h>
 #include <math.h>
+#include "fourier.h"
 #include "gabor.h"
 
 /**
  * Generates a 2D Gabor filter and saves the result into gw.
  */
-void filter2(float complex *gw, int n, float xi, float sigma, float lambda, float theta) {
+void _filter2(float complex *gw, int n, float xi, float sigma, float lambda, float theta) {
 
     float pi = acos(-1.0);
 
@@ -24,10 +25,10 @@ void filter2(float complex *gw, int n, float xi, float sigma, float lambda, floa
 /**
  * Generates a 2D Gabor filter that is normalized and saves the result into gw.
  */
-void normalizedFilter2(float complex *gw, int n, float xi, float sigma, float lambda, float theta) {
+void _normalizedFilter2(float complex *gw, int n, float xi, float sigma, float lambda, float theta) {
 
     // Generate the filter
-    filter2(gw, n, xi, sigma, lambda, theta);
+    _filter2(gw, n, xi, sigma, lambda, theta);
 
     // Now normalize the real and imaginary values
 
@@ -100,7 +101,7 @@ void normalizedFilter2(float complex *gw, int n, float xi, float sigma, float la
 /**
  * Fixes the coordinates of an input image by mirroring all y-values
  */
-void mirrorYCoordinate(float complex *f, float complex *f2, int n) {
+void _mirrorYCoordinate(float complex *f, float complex *f2, int n) {
     //float complex *fTemp = malloc(n * n * sizeof(float complex));
     for (int y = 0; y < n; y++) {
         for (int x = 0; x < n; x++) {
@@ -118,7 +119,7 @@ void mirrorYCoordinate(float complex *f, float complex *f2, int n) {
 /**
  * Translates a 2D complex vector in horizontal and vertical direction.
  */
-void translate2(float complex *f, float complex *fShift, int n, int hShift, int vShift) {
+void _translate2(float complex *f, float complex *fShift, int n, int hShift, int vShift) {
 
     for (int y = 0; y < n; y++) {
         for (int x = 0; x < n; x++) {

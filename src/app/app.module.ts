@@ -11,7 +11,10 @@ import {DocsComponent} from "./view/docs/docs.component";
 import {AboutComponent} from "./view/about/about.component";
 
 import {MathJaxDirective} from "./model/other/math-jax.directive";
-import { InputSliderComponent } from "./view/input-slider/input-slider.component";
+import {InputSliderComponent} from "./view/input-slider/input-slider.component";
+
+import {ImageProcessingService} from "./model/math/image-processing.service";
+import {ProgressService} from "./model/math/progress.service";
 
 const appRoutes: Routes = [
     {path: "demo", component: DemoComponent},
@@ -42,7 +45,7 @@ const appRoutes: Routes = [
         ),
         NgbModule.forRoot()
     ],
-    providers: [],
+    providers: [ImageProcessingService, ProgressService],
     bootstrap: [AppComponent]
 })
 export class AppModule {

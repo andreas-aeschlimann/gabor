@@ -1,15 +1,12 @@
 <div class="row">
     <div class="col-12 col-sm-6 col-lg-8 mb-5">
-        <h1 class="mb-4">Gabor Filter Demo</h1>
+        <h1 class="mb-4">Gabor filter demo</h1>
         <p>This page allows the mathematical convolution of an image with a Gabor filter. Please refer to the <span class="link btn-link" (click)="openDocs()">docs</span> to learn more about the theory and the involved parameters.</p>
 
         <h4 class="mt-4 mb-3">Input image</h4>
         <canvas #inputCanvas width="{{ inputCanvasImage.size }}" height="{{ inputCanvasImage.size }}"></canvas>
 
         <h4 class="mt-4 mb-3">Output image</h4>
-        <p *ngIf="progressBarValue > 0">
-            <ngb-progressbar [showValue]="false" type="primary" [value]="progressBarValue"></ngb-progressbar>
-        </p>
         <canvas #outputCanvas width="{{ outputCanvasImage.size }}" height="{{ outputCanvasImage.size }}"></canvas>
 
     </div>
@@ -39,7 +36,7 @@
                     <div class="form-group row">
                         <div class="col-12">
                             <select class="form-control" [(ngModel)]="image" (ngModelChange)="saveListedImage(image)">
-                                <option *ngFor="let image of images" [ngValue]="image">{{ image.name }}</option>
+                                <option *ngFor="let image of images" [ngValue]="image" [disabled]="image.disabled">{{ image.name }}</option>
                             </select>
                         </div>
                     </div>
@@ -49,10 +46,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="list-group list-group-flush">
                 <div class="list-group-item">
-                    <p class="font-weight-bold">Filter parameters</p>
+                    <p class="font-weight-bold">Gabor filter <button class="btn btn-outline-primary btn-sm ml-2" (click)="showFilter()" [disabled]="true">show</button></p>
                     <p class="card-text">Define the Gabor filter parameters below.</p>
                     <div class="form-group row">
                         <div class="col-4 pr-0"><span
@@ -72,7 +67,7 @@
                         <div class="col-4 pr-0"><span
                                 [appMathJax]="'$\\lambda$'"></span>={{ lambda }}</div>
                         <div class="col-8">
-                            <app-input-slider [(ngModel)]="lambda" [min]="1.0" [max]="20" [step]="0.1"></app-input-slider>
+                            <app-input-slider [(ngModel)]="lambda" [min]="2.0" [max]="10" [step]="0.1"></app-input-slider>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -91,12 +86,26 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="list-group list-group-flush">
-                <div class="list-group-item text-center">
-                    <button class="btn btn-outline-primary" (click)="convoluteImage()" [disabled]="progressBarValue > 0 && progressBarValue < 100">Generate output image</button>
+                <div class="list-group-item text-center py-4">
+                    <button class="btn btn-outline-primary" (click)="convoluteImage()" [disabled]="progressService.isInProgress()">Generate output image</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<ng-template #filterModal let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title">Modal title</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <canvas #filterRealCanvas width="1024" height="1024"></canvas>
+        <canvas #filterImagCanvas width="1024" height="1024"></canvas>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+    </div>
+</ng-template>
