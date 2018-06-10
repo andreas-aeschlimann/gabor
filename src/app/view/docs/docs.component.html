@@ -1,19 +1,96 @@
 <div class="row">
+
     <div class="col-12 col-sm-6 col-lg-8 mb-5">
+
         <h1 class="mb-4">Documentation</h1>
-        <h4 class="mt-4">Web application</h4>
-        <p>Text hello world</p>
-        <div class="math"
-             [appMathJax]="'$$g_{\\omega, \\nu, c}(x, y) = \\exp \\left( -\\tfrac{x\'^2 + \\xi^2 y\'^2}{2 \\sigma^2} \\right) \\exp \\left(2 \\pi i \\tfrac{x\'}{\\lambda} \\right)$$'"></div>
-        <p>Text hello world Text hello world v Text hello world Text hello world Text hello world Text hello world</p>
-        <p>Text hello world Text hello world v Text hello world Text hello world Text hello world Text hello world</p>
-        <h4 class="mt-4">Master thesis on Gabor transform</h4>
-        <p>Text hello world Text hello world v Text hello world Text hello world Text hello world Text hello world</p>
-        <p>Text hello world Text hello world v Text hello world Text hello world Text hello world Text hello world</p>
-        <h4 class="mt-4">Download</h4>
-        <p>You may download the Master thesis about the Gabor transform below.</p>
-        <a class="btn btn-outline-primary" href="assets/docs/GaborTransform.pdf">Gabor Transform and Vision</a>
+        <h4 class="mt-4">Info about the web application</h4>
+        <p>
+            This web application has been built with <a href="https://www.angular.io/">Angular 6</a> and is written in <a href="https://www.typescriptlang.org/">TypeScript</a> (JavaScript) and C.
+            We first implemented the whole application in TypeScript, but found the performance to be too weak for its purpose.
+            Because of that, we implemented the mathematical parts in native C code and used <a href="https://kripken.github.io/emscripten-site/index.html">Emscripten</a> to compile this code to <a href="https://webassembly.org/">WebAssembly</a>.
+            In order to make the whole application more reactive, we added <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Web Workers</a> that are able to make the mathematical calculations in a background thread.
+            The whole source code may be found on <a href="https://github.com/andreas-aeschlimann/gabor">GitHub</a> and is available with MIT license.
+        </p>
+        <div class="info-box text-danger font-italic small">
+            Note: As of 2018, WebAssembly and Web Workers have only been available for one year.
+            It is thus necessary to use new browser versions for the Gabor filter demo.
+            Supported browsers are Google Chrome (including Android), Microsoft Edge, Mozilla Firefox, Opera and Apple Safari (including iOS).
+            If you have problems, please make sure your browser is up-to-date.
+        </div>
+
+        <h4 class="mt-4">Quick introduction to Gabor filters</h4>
+        <p>
+            Assume that we have a grayscale input image with <span [appMathJax]="'$n$'"></span> pixels of width and height.
+            If we define it to be representated by
+        <p [appMathJax]="'$$f: \\mathbb{Z}_n \\times \\mathbb{Z}_n \\rightarrow \\mathbb{R},$$'"></p>
+        <p>
+            then <span [appMathJax]="'$f(x, y)$'"></span> is the grayscale value any pixel <span [appMathJax]="'$(x, y) \\in \\mathbb{Z}_n \\times \\mathbb{Z}_n$'"></span>.
+        </p>
+        <p class="text-indent">
+            We define a (centered and semi-discrete) Gabor filter as
+        </p>
+        <p [appMathJax]="'$$g(x, y) = \\exp \\left( -\\tfrac{x\'^2 + \\xi^2 y\'^2}{2 \\sigma^2} \\right) \\exp \\left(2 \\pi i \\tfrac{x\'}{\\lambda} \\right)$$'"></p>
+        <p>
+            with the coordinate transformation
+        </p>
+        <p [appMathJax]="'$$x\' = +\\cos(\\theta)(x-\\tfrac{n}{2}) + \\sin(\\theta)(x-\\tfrac{n}{2}),$$'"></p>
+        <p [appMathJax]="'$$y\' = -\\sin(\\theta)(x-\\tfrac{n}{2}) + \\cos(\\theta)(x-\\tfrac{n}{2}),$$'"></p>
+        <p>
+            where <span [appMathJax]="'$\\xi, \\sigma, \\lambda > 0$'"></span> and <span [appMathJax]="'$\\theta \\in [0, 2\\pi[$'"></span>.
+            These parameters may be freely chosen on the <a routerLink="/demo">demo page</a> before generating an output image.
+        </p>
+        <p class="text-indent">
+            The resulting image on the <a routerLink="/demo">demo page</a> is the absolute part of the discrete convolution of the input image and the selected Gabor filter, that is
+        </p>
+        <p [appMathJax]="'$$|(f * g)(x, y)|, \\hspace{0.5cm} (x, y) \\in \\mathbb{Z}_n \\times \\mathbb{Z}_n.$$'"></p>
+        <p>
+            This convolution is motivated by the Gabor transform, we thus refer to the master thesis for further reading.
+        </p>
+
+        <h4 class="mt-4">Parameters on the demo page</h4>
+        <p>
+            In summary, the demo provides the following parameters:
+        </p>
+        <ul>
+            <li>
+                <span [appMathJax]="'$\\xi > 0$'"></span>:
+                The dilation of the Gaussian part of the Gabor filter in regard of the vertical axis.
+                If for example <span [appMathJax]="'$\\xi = 1$'"></span>, then the contour plot of the Gaussian is circular.
+            </li>
+            <li>
+                <span [appMathJax]="'$\\sigma > 0$'"></span>:
+                The width/variance of the Gaussian part of the Gabor filter.
+                The higher the value, the flatter the Gaussian part and thus the Gabor filter.
+            </li>
+            <li>
+                <span [appMathJax]="'$\\lambda > 0$'"></span>:
+                The wavelength of the sinusoid part of the Gabor filter.
+                The higher the value, the more oscillations appear in the Gabor filter.
+            </li>
+            <li>
+                <span [appMathJax]="'$\\theta \\in [0, \\pi[$'"></span>:
+                The angle of the coordinate transformation in the Gabor filter, counter-clockwise, starting from the horizontal axis.
+                Due to the form of the Gabor filter, only values between <span [appMathJax]="'$0$'"></span> and <span [appMathJax]="'$\\pi$'"></span> have to be considered.
+            </li>
+            <li>
+                <span [appMathJax]="'$N \\in \\mathbb{N}$'"></span>:
+                The amount of convolutions that the web application computes in one step.
+                If a basic angle <span [appMathJax]="'$\\theta$'"></span> and any number <span [appMathJax]="'$N$'"></span> are given, multiple Gabor filters <span [appMathJax]="'$g_k$'"></span> are automatically generated.
+                The generated Gabor filters all have the same parameters, except for the varying angle <span [appMathJax]="'$\\theta_k = \\theta + \\tfrac{k\\pi}{N}$'"></span> for <span [appMathJax]="'$k=0, \\dots N-1$'"></span>.
+                In that case, the generated output image is the sum of all resulting <span [appMathJax]="'$N$'"></span> convolutions <span [appMathJax]="'$\\sum |f*g_k|$'"></span>.
+            </li>
+        </ul>
+
+        <h4 class="mt-4">Mathematical theory</h4>
+        <p>
+            This web application is the result of a Master thesis at <a href="https://www.unibas.ch">University of Basel</a> written by <a routerLink="/about">Andreas Aeschlimann</a>.
+            You may download the Master thesis about the Gabor transform and Gabor filters below.
+            It provides a mathematical background for the Gabor analysis and explains the algorithms used on this page.
+        </p>
+        <a class="btn btn-outline-primary mt-4" href="assets/docs/GaborTransform.pdf">Gabor Transform and Vision</a>
+
     </div>
+
     <div class="col-12 col-sm-6 col-lg-4">
         <div class="card">
             <img class="card-img-top" src="assets/images/links.jpg" alt="Logo">
@@ -66,4 +143,5 @@
             </div>
         </div>
     </div>
+
 </div>

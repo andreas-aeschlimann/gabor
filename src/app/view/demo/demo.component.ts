@@ -95,7 +95,7 @@ export class DemoComponent implements OnInit {
      * An image list
      */
     images: any[] = [
-        {name: "Domestic cat", url: "assets/images/input/cat.jpg"},
+        {name: "Domestic cat \"Flöckli\"", url: "assets/images/input/cat.jpg"},
         {name: "USS Enterprise NCC-1701", url: "assets/images/input/enterprise.png"},
         {name: "Lamp", url: "assets/images/input/lamp.png"},
         {name: "Lena", url: "assets/images/input/lena.jpg"},

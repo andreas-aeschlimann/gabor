@@ -1,15 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from "@angular/core";
+import {Router} from '@angular/router';
 
 @Component({
-  selector: 'app-docs',
-  templateUrl: './docs.component.html',
-  styleUrls: ['./docs.component.scss']
+    selector: "app-docs",
+    templateUrl: "./docs.component.html",
+    styleUrls: ["./docs.component.scss"]
 })
-export class DocsComponent implements OnInit {
+export class DocsComponent {
 
-  constructor() { }
+    /**
+     * Constructor.
+     * @param router
+     */
+    constructor(private router: Router) {}
 
-  ngOnInit() {
-  }
+    /**
+     * Opens the about page.
+     */
+    openAbout() {
+        this.router.navigate(["about"]);
+    }
 
 }

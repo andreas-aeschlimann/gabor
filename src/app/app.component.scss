@@ -1,5 +1,9 @@
 nav, .container {
     min-width: 300px;
+
+    .nav-link {
+        padding: 0.5rem 1rem;
+    }
 }
 
 footer {
