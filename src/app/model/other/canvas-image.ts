@@ -56,9 +56,20 @@ export class CanvasImage {
             (observer) => {
                 const image: HTMLImageElement = new Image();
                 image.onload = () => {
-                    this.context.drawImage(image, 0, 0, this.size, this.size);
+
+                    // Make sure the image is centered and then cropped, if width and height are not equal
+                    const ratio: number = image.naturalWidth / image.naturalHeight;
+                    if (ratio > 1) {
+                        this.context.drawImage(image, - (this.size * ratio - this.size) / 2, 0, this.size * ratio, this.size);
+                    } else if (ratio < 1) {
+                        this.context.drawImage(image, 0, - (this.size / ratio - this.size) / 2, this.size, this.size / ratio);
+                    } else {
+                        this.context.drawImage(image, 0, 0, this.size, this.size);
+                    }
+
                     observer.next(true);
                     observer.complete();
+
                 };
                 image.src = url;
 
@@ -126,8 +137,8 @@ export class CanvasImage {
         }
 
         const minMax: number[] = this.findMinMax(pixels);
-        const diff: number = minMax[1] - minMax[0];
-        const scale: number = diff > 0 ? 256.0 / diff : 1;
+        // const diff: number = minMax[1] - minMax[0];
+        const scale: number = 1; // diff > 0 ? 256.0 / diff : 1;
 
         let j: number = 0;
         for (let y = 0; y < height; y++) {
@@ -148,6 +159,11 @@ export class CanvasImage {
 
     }
 
+    /**
+     * Gets the minimum and maximum value of an array.
+     * @param {Uint8ClampedArray} pixels
+     * @returns {number[]}
+     */
     private findMinMax(pixels: Uint8ClampedArray): number[] {
 
         let min: number = pixels[0], max: number = pixels[0];
