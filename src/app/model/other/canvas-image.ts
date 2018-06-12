@@ -1,6 +1,8 @@
 import {ElementRef} from "@angular/core";
 import {Observable} from "rxjs";
 
+import * as FileSaver from "file-saver";
+
 export class CanvasImage {
 
     /**
@@ -37,11 +39,13 @@ export class CanvasImage {
 
     /**
      * Constructor.
-     * @param {ElementRef} canvas
+     * @param {ElementRef} canvasElement
      * @param {number} size
      */
-    constructor(public canvas: ElementRef, size: number) {
-        this.context = (<HTMLCanvasElement> canvas.nativeElement).getContext("2d");
+    constructor(public canvasElement: ElementRef, size: number) {
+        this.context = (<HTMLCanvasElement> canvasElement.nativeElement).getContext("2d");
+        this.context.fillStyle = "#CCC";
+        this.context.fillRect(0, 0, size, size);
         this.size = size;
     }
 
@@ -122,11 +126,12 @@ export class CanvasImage {
     }
 
     /**
-     * Sets all pixels.
+     * Sets all pixels and draws grayscale depending on the pixel values.
      * @param {Uint8ClampedArray} pixels
+     * @param {boolean} adjustScale
      * @returns {boolean}
      */
-    setGrayScalePixels(pixels: Uint8ClampedArray): boolean {
+    setGrayScalePixels(pixels: Uint8ClampedArray, adjustScale?: boolean): boolean {
 
         const width = this.context.canvas.width;
         const height = this.context.canvas.height;
@@ -137,8 +142,8 @@ export class CanvasImage {
         }
 
         const minMax: number[] = this.findMinMax(pixels);
-        // const diff: number = minMax[1] - minMax[0];
-        const scale: number = 1; // diff > 0 ? 256.0 / diff : 1;
+        const diff: number = minMax[1] - minMax[0];
+        const scale: number = diff > 0 && adjustScale ? 256.0 / diff : 1;
 
         let j: number = 0;
         for (let y = 0; y < height; y++) {
@@ -157,6 +162,118 @@ export class CanvasImage {
 
         return true;
 
+    }
+
+    /**
+     * Draws axes in the canvas.
+     */
+    drawAxes() {
+
+        const width = this.context.canvas.width;
+        const height = this.context.canvas.height;
+        const imageData = this.context.getImageData(0, 0, width, height);
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+
+                if (width / 2 !== x && height / 2 !== y) continue;
+
+                const i: number = (y * 4) * width + x * 4;
+
+                imageData.data[i] = 0;
+                imageData.data[i + 1] = 0;
+                imageData.data[i + 2] = 0;
+
+            }
+        }
+
+        if (width > 0 && height > 0) {
+            this.context.putImageData(imageData, 0, 0, 0, 0, imageData.width, imageData.height);
+        }
+
+    }
+
+    /**
+     * Sets all pixels and draws in color depending on the pixel values.
+     * min = blue, max = red
+     * @param {Uint8ClampedArray} pixels
+     * @returns {boolean}
+     */
+    setColorScalePixels(pixels: Uint8ClampedArray): boolean {
+
+        const width = this.context.canvas.width;
+        const height = this.context.canvas.height;
+        const imageData = this.context.getImageData(0, 0, width, height);
+
+        if (pixels.length !== width * height) {
+            return false;
+        }
+
+        const minMax: number[] = this.findMinMax(pixels);
+        const z0: number = minMax[0];
+        const z1: number = z0 + (minMax[1] - minMax[0]) / 3;
+        const z2: number = z0 + 2 * (minMax[1] - minMax[0]) / 3;
+        const z3: number = minMax[1];
+        console.log(z0);console.log(z3);
+
+        let j: number = 0;
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const i: number = (y * 4) * width + x * 4;
+                const z: number = pixels[j];
+
+                if (z < z1) {
+                    imageData.data[i] = 0;
+                    imageData.data[i + 1] = Math.max(255 / (z1 - z0) * z - 255 / (z1 - z0) * z0, 0);
+                    imageData.data[i + 2] = Math.max(-255 / (z1 - z0) * z - 255 / (z1 - z0) * z0, 0);
+                } else if (z < z2) {
+                    imageData.data[i] = Math.max(255 / (z2 - z1) * z - 255 / (z2 - z1) * z1, 0);
+                    imageData.data[i + 1] = 255;
+                    imageData.data[i + 2] = 0;
+                } else {
+                    imageData.data[i] = 255;
+                    imageData.data[i + 1] = Math.max(255 / (z3 - z2) * z - 255 / (z3 - z2) * z3, 0);
+                    imageData.data[i + 2] = 0;
+                }
+
+                if (j === 0) console.log(imageData.data[i] + "," + imageData.data[i+1] + "," + imageData.data[i+2]);
+
+                j++;
+            }
+        }
+
+        if (width > 0 && height > 0) {
+            this.context.putImageData(imageData, 0, 0, 0, 0, imageData.width, imageData.height);
+        }
+
+        return true;
+
+    }
+
+    /**
+     * Sets text at a given position.
+     * @param {string} text
+     * @param {number[]} position
+     * @param {number} fontSize
+     */
+    setText(text: string, position: number [], fontSize: number) {
+        this.context.shadowColor = "#000";
+        this.context.shadowOffsetX = 0;
+        this.context.shadowOffsetY = 0;
+        this.context.shadowBlur = fontSize / 10;
+        this.context.fillStyle = "#FFF";
+        this.context.font = ( fontSize * this.size / 1024) + "px Arial";
+        this.context.fillText(text, position[0] * this.size / 1024, position[1] * this.size / 1024);
+    }
+
+    /**
+     * Downloads the whole canvas as an image.
+     */
+    download() {
+        (<HTMLCanvasElement> this.canvasElement.nativeElement).toBlob(
+            (blob: Blob) => {
+                FileSaver.saveAs(blob, "image.jpg");
+            }, "image/jpeg");
     }
 
     /**

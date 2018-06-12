@@ -3,11 +3,11 @@
         <h1 class="mb-4">Gabor filter demo</h1>
         <p>This page allows the mathematical convolution of an image with a Gabor filter. Please refer to the <span class="link btn-link" (click)="openDocs()">docs</span> to learn more about the theory and the involved parameters.</p>
 
-        <h4 class="mt-4 mb-3">Input image</h4>
-        <canvas #inputCanvas width="{{ inputCanvasImage.size }}" height="{{ inputCanvasImage.size }}"></canvas>
+        <h4 class="mt-4 mb-3">Input image <button class="btn btn-outline-primary btn-sm ml-2" (click)="inputCanvasImage.download()">Download</button></h4>
+        <canvas #inputCanvas width="{{ imageSize }}" height="{{ imageSize }}"></canvas>
 
-        <h4 class="mt-4 mb-3">Output image</h4>
-        <canvas #outputCanvas width="{{ outputCanvasImage.size }}" height="{{ outputCanvasImage.size }}"></canvas>
+        <h4 class="mt-4 mb-3">Output image <button class="btn btn-outline-primary btn-sm ml-2" (click)="outputCanvasImage.download()">Download</button></h4>
+        <canvas #outputCanvas width="{{ imageSize }}" height="{{ imageSize }}"></canvas>
 
     </div>
     <div class="col-12 col-sm-6 col-lg-4">
@@ -40,14 +40,22 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group row" *ngIf="image.url === ''">
-                        <div class="col-12">
-                            <input type="file" class="form-control" id="input" (change)="saveUploadedImage($event)">
+                    <ng-container *ngIf="image.url === ''">
+                        <div class="form-group row mb-2">
+                            <div class="col-12">
+                                <input type="file" class="form-control" id="input" (change)="saveUploadedImage($event)">
+                            </div>
                         </div>
-                    </div>
+                        <div class="form-group row text-right">
+                            <div class="col-12">
+                                <span class="btn-link btn-primary" placement="bottom" triggers="mouseenter:mouseleave"
+                                      ngbPopover="Your image is stored in your browser and only visible to you." popoverTitle="Privacy info">Privacy info</span>
+                            </div>
+                        </div>
+                    </ng-container>
                 </div>
                 <div class="list-group-item">
-                    <p class="font-weight-bold">Gabor filter <button class="btn btn-outline-primary btn-sm ml-2" (click)="showFilter()" [disabled]="true">show</button></p>
+                    <p class="font-weight-bold">Gabor filter <button class="btn btn-outline-primary btn-sm ml-2" (click)="showFilter()" [disabled]="false">Show</button></p>
                     <p class="card-text">Define the Gabor filter parameters below.</p>
                     <div class="form-group row">
                         <div class="col-4 pr-0"><span
@@ -93,19 +101,3 @@
         </div>
     </div>
 </div>
-
-<ng-template #filterModal let-c="close" let-d="dismiss">
-    <div class="modal-header">
-        <h4 class="modal-title">Modal title</h4>
-        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <canvas #filterRealCanvas width="1024" height="1024"></canvas>
-        <canvas #filterImagCanvas width="1024" height="1024"></canvas>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
-    </div>
-</ng-template>

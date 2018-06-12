@@ -3,18 +3,20 @@ import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 
+import {ImageProcessingService} from "./model/math/image-processing.service";
+import {ProgressService} from "./model/math/progress.service";
+
+import {MathJaxDirective} from "./model/other/math-jax.directive";
+
 import {AppComponent} from "./app.component";
 
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {DemoComponent} from "./view/demo/demo.component";
 import {DocsComponent} from "./view/docs/docs.component";
 import {AboutComponent} from "./view/about/about.component";
+import { FilterComponent } from "./view/filter/filter.component";
 
-import {MathJaxDirective} from "./model/other/math-jax.directive";
 import {InputSliderComponent} from "./view/input-slider/input-slider.component";
-
-import {ImageProcessingService} from "./model/math/image-processing.service";
-import {ProgressService} from "./model/math/progress.service";
 
 const appRoutes: Routes = [
     {path: "demo", component: DemoComponent},
@@ -31,7 +33,11 @@ const appRoutes: Routes = [
         DocsComponent,
         AboutComponent,
         MathJaxDirective,
-        InputSliderComponent
+        InputSliderComponent,
+        FilterComponent
+    ],
+    entryComponents: [
+        FilterComponent
     ],
     imports: [
         BrowserModule,

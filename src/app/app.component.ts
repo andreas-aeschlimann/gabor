@@ -17,14 +17,14 @@ export class AppComponent {
 
     /**
      * Constructor.
-     * @param router
-     * @param progressService
+     * @param {Router} router
+     * @param {ProgressService} progressService
      */
     constructor(private router: Router, public progressService: ProgressService) {}
 
     /**
      * Opens an internal page
-     * @param url
+     * @param {string} url
      */
     openPage(url: string) {
         this.collapsed = true;

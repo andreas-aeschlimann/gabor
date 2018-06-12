@@ -1,12 +1,14 @@
-import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {Event, Router} from "@angular/router";
 import {interval, Subscription} from "rxjs";
 
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+
 import {ImageProcessingService} from "../../model/math/image-processing.service";
+import {ProgressService} from "../../model/math/progress.service";
 
 import {CanvasImage} from "../../model/other/canvas-image";
-import {ProgressService} from '../../model/math/progress.service';
-import {ModalDismissReasons, NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {FilterComponent} from "../filter/filter.component";
 
 @Component({
     selector: "app-demo",
@@ -14,7 +16,7 @@ import {ModalDismissReasons, NgbModal, NgbModalRef} from '@ng-bootstrap/ng-boots
     styleUrls: ["./demo.component.scss"],
     providers: []
 })
-export class DemoComponent implements OnInit {
+export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ///////////////////
     // FILTER PARAMS //
@@ -23,26 +25,31 @@ export class DemoComponent implements OnInit {
 
     /**
      * Gabor filter parameter for the dilation in x or y
+     *
      */
     xi: number = 0.5;
 
     /**
      * Gabor filter parameter for the width
+     * @type {number}
      */
     sigma: number = 1;
 
     /**
      * Gabor filter parameter for the wavelength of the sinusoid part
+     * @type {number}
      */
     lambda: number = 4;
 
     /**
      * Gabor filter parameter for the original angle
+     * @type {number}
      */
     theta: number = 0;
 
     /**
      * Gabor filter parameter for the amount of rotates considered
+     * @type {number}
      */
     amount: number = 1;
 
@@ -54,49 +61,33 @@ export class DemoComponent implements OnInit {
 
     /**
      * Input canvas html element
+     * @type {ElementRef}
      */
     @ViewChild("inputCanvas") inputCanvas: ElementRef;
 
     /**
      * Output canvas html element
+     * @type {ElementRef}
      */
     @ViewChild("outputCanvas") outputCanvas: ElementRef;
 
     /**
-     * Filter canvas html element
-     */
-    @ViewChild("filterRealCanvas") filterRealCanvas: ElementRef;
-
-    /**
-     * Filter canvas html element
-     */
-    @ViewChild("filterImagCanvas") filterImagCanvas: ElementRef;
-
-    /**
      * The input canvas image
+     * @type {CanvasImage}
      */
     inputCanvasImage: CanvasImage;
 
     /**
      * The output canvas image
+     * @type {CanvasImage}
      */
     outputCanvasImage: CanvasImage;
 
     /**
-     * The filter canvas image
-     */
-    filterRealCanvasImage: CanvasImage;
-
-    /**
-     * The filter canvas image
-     */
-    filterImagCanvasImage: CanvasImage;
-
-    /**
      * The default pixel size of the canvas
+     * @type {number}
      */
     imageSize: number = 1024;
-
 
 
     ////////////////
@@ -108,6 +99,7 @@ export class DemoComponent implements OnInit {
      * An image list
      */
     images: any[] = [
+        {name: "Church St. Margarethen", url: "assets/images/input/church.jpg"},
         {name: "Domestic cat \"Flöckli\"", url: "assets/images/input/cat.jpg"},
         {name: "Lamp", url: "assets/images/input/lamp.png"},
         {name: "Lena", url: "assets/images/input/lena.jpg"},
@@ -131,11 +123,13 @@ export class DemoComponent implements OnInit {
 
     /**
      * The modal
+     * @type {NgbModalRef}
      */
     @ViewChild("filterModal") filterModal: NgbModalRef;
 
     /**
      * An estimate of the average calculation time based on 1024 image
+     * @type {number}
      */
     private calculationDurationEstimates: number = 3000;
 
@@ -147,25 +141,38 @@ export class DemoComponent implements OnInit {
 
     /**
      * Constructor.
-     * @param router
-     * @param modalService
-     * @param imageProcessingService
-     * @param progressService
+     * @param {Router} router
+     * @param {NgbModal} modalService
+     * @param {ImageProcessingService} imageProcessingService
+     * @param {ProgressService} progressService
      */
     constructor(private router: Router,
                 private modalService: NgbModal,
                 private imageProcessingService: ImageProcessingService,
                 public progressService: ProgressService) {
-        this.image = this.images[0];
+        this.image = this.images[1];
+        this.progressService.percentage = 0;
     }
 
     /**
      * NgOnInit.
      */
-    ngOnInit() {
+    ngOnInit() {}
+
+    /**
+     * NgAfterViewInit.
+     */
+    ngAfterViewInit() {
         this.inputCanvasImage = new CanvasImage(this.inputCanvas, this.imageSize);
         this.outputCanvasImage = new CanvasImage(this.outputCanvas, this.imageSize);
         this.saveListedImage(this.image);
+    }
+
+    /**
+     * NgOnDestroy.
+     */
+    ngOnDestroy() {
+        this.progressService.percentage = 0;
     }
 
 
@@ -176,7 +183,7 @@ export class DemoComponent implements OnInit {
 
     /**
      * Adjusts the image size of both canvases.
-     * @param imageSize in pixel
+     * @param {number} imageSize in pixel
      */
     adjustImageSize(imageSize: number) {
         this.inputCanvasImage.size = imageSize;
@@ -200,16 +207,18 @@ export class DemoComponent implements OnInit {
 
     /**
      * Saves an uploaded image to the canvas.
-     * @param event
+     * @param {Event} event
      */
     saveUploadedImage(event: Event) {
 
         try {
 
+            if ((<any>event).target.files.length === 0) return;
+
             const fileReader: FileReader = new FileReader();
             fileReader.onload = (progressEvent: ProgressEvent) => {
                 this.saveImage(this.inputCanvasImage, (<any>progressEvent.target).result);
-                this.saveImage(this.outputCanvasImage, (<any>progressEvent.target).result);
+                // this.saveImage(this.outputCanvasImage, (<any>progressEvent.target).result);
             };
             fileReader.readAsDataURL((<any>event).target.files[0]);
 
@@ -221,8 +230,8 @@ export class DemoComponent implements OnInit {
 
     /**
      * Saves an image by the url to a canvas image object.
-     * @param canvasImage
-     * @param url
+     * @param {CanvasImage} canvasImage
+     * @param {string} url
      */
     private saveImage(canvasImage: CanvasImage, url: string) {
 
@@ -248,32 +257,16 @@ export class DemoComponent implements OnInit {
      */
     showFilter() {
 
-        this.imageProcessingService.normalizedFilter2(
-            this.imageSize,
-            this.xi,
-            this.sigma,
-            this.lambda,
-            (-2 * Math.PI * this.theta / 360),
-            this.amount,
-            (event: MessageEvent) => {
-                // console.log(event.data.gReal);
-                // console.log(event.data.gImag);
-                this.filterRealCanvasImage.setGrayScalePixels(event.data.gReal);
-                this.filterImagCanvasImage.setGrayScalePixels(event.data.gImag);
-            },
-            (event: ErrorEvent) => {
-                console.error(event);
-            }
-        );
+        const modal: NgbModalRef = this.modalService.open(FilterComponent, { size: "lg" });
+        const filterComponent: FilterComponent = modal.componentInstance;
 
-        this.modalService.open(this.filterModal, { size: "lg" }).result.then(
-            _ => {
-
-                this.filterRealCanvasImage = new CanvasImage(this.filterRealCanvas, this.imageSize);
-                this.filterImagCanvasImage = new CanvasImage(this.filterImagCanvas, this.imageSize);
-
-            }
-        );
+        // Pass the filter data
+        filterComponent.xi = this.xi;
+        filterComponent.sigma = this.sigma;
+        filterComponent.lambda = this.lambda;
+        filterComponent.theta = this.theta;
+        filterComponent.imageSize = this.imageSize;
+        console.log("image size set");
 
     }
 

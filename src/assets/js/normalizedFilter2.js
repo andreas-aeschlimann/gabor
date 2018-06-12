@@ -16,7 +16,6 @@ var xi =  0;
 var sigma = 0;
 var lambda = 0;
 var theta = 0;
-var amount = 0;
 
 var onmessage = function(messageEvent) {
     n = messageEvent.data.n;
@@ -61,8 +60,6 @@ var normalizedFilter2 = function() {
     } catch (e) {
         console.error(e);
     }
-
-    console.log(gReal);
 
     postMessage({gReal: gReal, gImag: gImag});
 

@@ -1,4 +1,4 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Input, OnInit} from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
 @Component({
@@ -14,12 +14,29 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 })
 export class InputSliderComponent implements OnInit, ControlValueAccessor {
 
+    /**
+     * The minimum value of the slider
+     * @type {number}
+     */
     @Input("min") min = 0;
+
+    /**
+     * The maximum value of the slier
+     * @type {number}
+     */
     @Input("max") max = 10;
+
+    /**
+     * The step number
+     * @type {number}
+     */
     @Input("step") step = 1;
 
+    /**
+     * The current value
+     * @type {number}
+     */
     value: number = this.min;
-
 
     /**
      * Invoked when the model has been changed
@@ -32,9 +49,20 @@ export class InputSliderComponent implements OnInit, ControlValueAccessor {
     onTouched: () => void = () => {};
 
 
+    /////////////
+    // METHODS //
+    /////////////
+
+
+    /**
+     * Constructor.
+     */
     constructor() {
     }
 
+    /**
+     * NgOnInit.
+     */
     ngOnInit() {
     }
 
@@ -45,6 +73,7 @@ export class InputSliderComponent implements OnInit, ControlValueAccessor {
         this.onChange(this.value);
     }
 
+
     ///////////////
     // OVERRIDES //
     ///////////////
@@ -52,7 +81,7 @@ export class InputSliderComponent implements OnInit, ControlValueAccessor {
 
     /**
      * Writes a new item to the element.
-     * @param value
+     * @param {number} value
      */
     writeValue(value: number): void {
 

@@ -13,7 +13,6 @@ export class ImageProcessingService {
                             sigma: number,
                             lambda: number,
                             theta: number,
-                            amount: number,
                             successCallback: (event: MessageEvent) => void,
                             errorCallback: (event: ErrorEvent) => void) {
 
@@ -33,7 +32,7 @@ export class ImageProcessingService {
         };
 
         // Post the data
-        backgroundWorker.postMessage({n: n, xi: xi, sigma: sigma, lambda: lambda, theta: theta, amount: amount});
+        backgroundWorker.postMessage({n: n, xi: xi, sigma: sigma, lambda: lambda, theta: theta});
 
     }
 
