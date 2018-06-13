@@ -43,7 +43,7 @@
                     <ng-container *ngIf="image.url === ''">
                         <div class="form-group row mb-2">
                             <div class="col-12">
-                                <input type="file" class="form-control" id="input" accept="image/jpeg,image/jpg,image/png,image/x-png,image/gif" (change)="saveUploadedImage($event)">
+                                <input type="file" class="form-control" id="input" accept="image/jpeg,image/jpg,image/png,image/x-png,image/gif" (change)="onInputFileChanged($event)">
                             </div>
                         </div>
                         <div class="form-group row text-right">

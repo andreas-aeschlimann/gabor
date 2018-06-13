@@ -115,6 +115,11 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     image: any;
 
+    /**
+     * The selected file
+     */
+    file: File;
+
 
     ///////////
     // OTHER //
@@ -198,7 +203,10 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     saveListedImage(image: any) {
 
-        if (image === undefined || image.url === "") return;
+        if (image === undefined || image.url === "") {
+            this.saveUploadedFile(this.file);
+            return;
+        }
 
         this.saveImage(this.inputCanvasImage, image.url);
         this.saveImage(this.outputCanvasImage, image.url);
@@ -206,24 +214,43 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     /**
-     * Saves an uploaded image to the canvas.
+     * Prepares a selected file to save it to the canvas.
      * @param {Event} event
      */
-    saveUploadedImage(event: Event) {
+    onInputFileChanged(event: Event) {
+
+        try {
+            if ((<any>event).target.files.length === 0) return;
+            this.saveUploadedFile((<any>event).target.files[0]);
+        } catch (e) {
+            console.error(e);
+            this.file = null;
+        }
+
+    }
+
+    /**
+     * Saves a file to the canvas.
+     * @param {File} file
+     */
+    saveUploadedFile(file: File) {
 
         try {
 
-            if ((<any>event).target.files.length === 0) return;
+            if (file instanceof File === false) return;
 
             const fileReader: FileReader = new FileReader();
             fileReader.onload = (progressEvent: ProgressEvent) => {
                 this.saveImage(this.inputCanvasImage, (<any>progressEvent.target).result);
-                // this.saveImage(this.outputCanvasImage, (<any>progressEvent.target).result);
+                this.saveImage(this.outputCanvasImage, (<any>progressEvent.target).result);
             };
-            fileReader.readAsDataURL((<any>event).target.files[0]);
+            fileReader.readAsDataURL(file);
+
+            this.file = file;
 
         } catch (e) {
             console.error(e);
+            this.file = null;
         }
 
     }
