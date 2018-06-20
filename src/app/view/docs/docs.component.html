@@ -22,7 +22,7 @@
 
         <h4 class="mt-4">Mathematical background</h4>
         <p>
-            Our web application is the result of a master thesis at <a href="https://www.unibas.ch">University of Basel</a> written by <a routerLink="/about">Andreas Aeschlimann</a>.
+            Our web application is the result of a Master's Thesis at <a href="https://www.unibas.ch">University of Basel</a> written by <a routerLink="/about">Andreas Aeschlimann</a>.
             The thesis provides the mathematical background for the Gabor analysis and explains the algorithms used on this page.
             You may download PDF below:
         </p>
@@ -32,18 +32,18 @@
         <!-- Chapter -->
         <h4 class="mt-4">Quick introduction to Gabor filters</h4>
 
-        <h5 class="mt-4">Input image</h5>
+        <h5 class="mt-4">Input image f</h5>
         <p>
             Assume that we have a grayscale input image with <span [appMathJax]="'$n$'"></span> pixels of width and height.
             If we define it to be representated by
-        <p [appMathJax]="'$$f: \\mathbb{Z}_n \\times \\mathbb{Z}_n \\rightarrow \\mathbb{R},$$'"></p>
+        <p [appMathJax]="'$$f: \\mathbb{Z}_n \\times \\mathbb{Z}_n \\rightarrow \\mathbb{Z}_{256},$$'"></p>
         <p>
-            then <span [appMathJax]="'$f(x, y)$'"></span> is the grayscale value any pixel <span [appMathJax]="'$(x, y) \\in \\mathbb{Z}_n \\times \\mathbb{Z}_n$'"></span>.
+            then <span [appMathJax]="'$f(x, y)$'"></span> is the grayscale value (from 0 to 255) of any pixel <span [appMathJax]="'$(x, y) \\in \\mathbb{Z}_n \\times \\mathbb{Z}_n$'"></span>.
         </p>
 
-        <h5 class="mt-4">Gabor filter</h5>
+        <h5 class="mt-4">Gabor filter g</h5>
         <p>
-            We define a (centered and semi-discrete) Gabor filter to be a product of a Gaussian function and a sinusoid, that is
+            We define a (centered semi-discrete) Gabor filter to be a product of a Gaussian function and a sinusoid, that is
         </p>
         <p [appMathJax]="'$$g(x, y) = \\exp \\left( -\\tfrac{x\'^2 + \\xi^2 y\'^2}{2 \\sigma^2} \\right) \\exp \\left(2 \\pi i \\tfrac{x\'}{\\lambda} \\right),$$'"></p>
         <p>
@@ -65,7 +65,7 @@
         </p>
         <p [appMathJax]="'$$|(f * g)(x, y)|, \\hspace{0.5cm} (x, y) \\in \\mathbb{Z}_n \\times \\mathbb{Z}_n.$$'"></p>
         <p>
-            This convolution is motivated by the Gabor transform, we thus refer to the <a href="assets/docs/GaborTransform.pdf">master thesis</a> for further reading.
+            This convolution is motivated by the Gabor transform, we thus refer to the <a href="assets/docs/GaborTransform.pdf">Master's Thesis</a> for further reading.
         </p>
 
 
@@ -93,7 +93,6 @@
             <li>
                 <span [appMathJax]="'$\\theta \\in [0, \\pi[$'"></span>:
                 The angle of the coordinate transformation in the Gabor filter, counter-clockwise, starting from the horizontal axis.
-                Due to the form of the Gabor filter, only values between <span [appMathJax]="'$0$'"></span> and <span [appMathJax]="'$\\pi$'"></span> have to be considered.
             </li>
         </ul>
         <p>In addition to creating a Gabor filter and calculating the convolution with an image function, we may also perform multiple convolutions at once by setting the last parameter:</p>
@@ -102,14 +101,14 @@
                 <span [appMathJax]="'$N \\in \\mathbb{N}$'"></span>:
                 The amount of convolutions that the web application computes in one step.
                 If a basic angle <span [appMathJax]="'$\\theta$'"></span> and any number <span [appMathJax]="'$N$'"></span> are given, multiple Gabor filters <span [appMathJax]="'$g_k$'"></span> are automatically generated.
-                The generated Gabor filters all have the same parameters, except for the varying angle <span [appMathJax]="'$\\theta_k = \\theta + \\tfrac{k\\pi}{N}$'"></span> for <span [appMathJax]="'$k=0, \\dots N-1$'"></span>.
+                The generated Gabor filters all have the same parameters, except for the varying angle <span [appMathJax]="'$\\theta_k = \\theta + \\tfrac{k\\pi}{N}$'"></span> for <span [appMathJax]="'$k \\in \\{0, \\dots N-1 \\}$'"></span>.
                 In that case, the generated output image is the sum of all resulting <span [appMathJax]="'$N$'"></span> convolutions <span [appMathJax]="'$\\sum |f*g_k|$'"></span>.
             </li>
         </ul>
         <h5>Example</h5>
         <p>
-            Set <span [appMathJax]="'$\\xi = 0.5$'"></span>, <span [appMathJax]="'$\\sigma = 1$'"></span>, <span [appMathJax]="'$\\lambda = 4$'"></span>, <span [appMathJax]="'$\\theta = 0$'"></span> and <span [appMathJax]="'$N = 4$'"></span>.
-            Then, the system creates four Gabor filters with angles of 0, 45, 90 and 135 degrees.
+            Set <span [appMathJax]="'$\\xi = 0.5$'"></span>, <span [appMathJax]="'$\\sigma = 1$'"></span>, <span [appMathJax]="'$\\lambda = 4$'"></span>, <span [appMathJax]="'$\\theta = 0$'"></span>, and <span [appMathJax]="'$N = 4$'"></span>.
+            Then, the system creates four Gabor filters with angles of 0, 45, 90, and 135 degrees.
         </p>
 
     </div>
