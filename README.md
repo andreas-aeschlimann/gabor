@@ -4,7 +4,7 @@ This project is a demonstration of two-dimensional Gabor filters that have been 
  
 The public demo page may be found at GitHub Pages: [https://andreas-aeschlimann.github.io/gabor/](https://andreas-aeschlimann.github.io/gabor/)
 
-## Summary
+## Summary
 
 Using the Fourier transform, one is able to determine frequencies that are present in the whole spatial domain. Unfortunately, it is not possible to say at which location the frequencies appear. In 1946, the Hungarian-born electrical engineer Dennis Gabor had the idea to modify the Fourier transform by adding a shifted window function g into the integral. From these modifications, the windowed Fourier transform—also known as the Gabor transform—was born.
 
