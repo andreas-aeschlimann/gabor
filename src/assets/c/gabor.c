@@ -102,17 +102,12 @@ void _normalizedFilter2(float complex *gw, int n, float xi, float sigma, float l
  * Fixes the coordinates of an input image by mirroring all y-values
  */
 void _mirrorYCoordinate(float complex *f, float complex *f2, int n) {
-    //float complex *fTemp = malloc(n * n * sizeof(float complex));
+
     for (int y = 0; y < n; y++) {
         for (int x = 0; x < n; x++) {
             f2[y*n+x] = f[y*n+(n-1-x)];
-            //printf("%f + %f*i", crealf(fTemp[y*n+x]), cimagf(fTemp[y*n+x]));
         }
     }
-    //printf("\n%f + %f*i", crealf(f[0]), cimagf(f[0]));
-    //printf("%f + %f*i", crealf(fTemp[0]), cimagf(fTemp[0]));
-
-    //printf("%f + %f*i", crealf(f[0]), cimagf(f[0]));
 
 }
 

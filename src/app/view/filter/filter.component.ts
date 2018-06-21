@@ -119,9 +119,9 @@ export class FilterComponent implements OnInit, AfterViewInit {
             this.sigma,
             this.lambda,
             (-2 * Math.PI * this.theta / 360),
-            (event: MessageEvent) => {
-                this.filterRealCanvasImage.setColorScalePixels(event.data.gReal);
-                this.filterImagCanvasImage.setColorScalePixels(event.data.gImag);
+            (gReal: Float32Array, gImag: Float32Array, event: MessageEvent) => {
+                this.filterRealCanvasImage.setColorScalePixels(<any> gReal);
+                this.filterImagCanvasImage.setColorScalePixels(<any> gImag);
             },
             (event: ErrorEvent) => {
                 console.error(event);

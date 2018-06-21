@@ -214,7 +214,6 @@ export class CanvasImage {
         const z1: number = z0 + (minMax[1] - minMax[0]) / 3;
         const z2: number = z0 + 2 * (minMax[1] - minMax[0]) / 3;
         const z3: number = minMax[1];
-        console.log(z0);console.log(z3);
 
         let j: number = 0;
         for (let y = 0; y < height; y++) {
@@ -235,8 +234,6 @@ export class CanvasImage {
                     imageData.data[i + 1] = Math.max(255 / (z3 - z2) * z - 255 / (z3 - z2) * z3, 0);
                     imageData.data[i + 2] = 0;
                 }
-
-                if (j === 0) console.log(imageData.data[i] + "," + imageData.data[i+1] + "," + imageData.data[i+2]);
 
                 j++;
             }

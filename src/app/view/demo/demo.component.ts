@@ -293,7 +293,6 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
         filterComponent.lambda = this.lambda;
         filterComponent.theta = this.theta;
         filterComponent.imageSize = this.imageSize;
-        console.log("image size set");
 
     }
 
@@ -322,10 +321,10 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
             this.lambda,
             (-2 * Math.PI * this.theta / 360),
             this.amount,
-            (event: MessageEvent) => {
+            (fConv: Float32Array, event: MessageEvent) => {
                 // console.log(event.data.fConv);
                 subscription.unsubscribe();
-                this.outputCanvasImage.setGrayScalePixels(event.data.fConv);
+                this.outputCanvasImage.setGrayScalePixels(<any> fConv);
                 this.progressService.percentage = 100;
             },
             (event: ErrorEvent) => {
