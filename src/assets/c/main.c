@@ -89,8 +89,7 @@ void EMSCRIPTEN_KEEPALIVE conv(float *y1, float *y2, float *yConv, int m, int n)
 }
 
 /**
- * Public method that calculates the 2D fast Gabor convolution of an input
- * function and a Gabor filter of given params.
+ * Public method that calculates the 2D normalized Gabor filter of given params.
  */
 void EMSCRIPTEN_KEEPALIVE normalizedFilter2(float *gReal, float *gImag, int n, float xi, float sigma, float lambda, float theta) {
 
