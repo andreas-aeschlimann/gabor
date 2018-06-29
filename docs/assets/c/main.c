@@ -6,49 +6,43 @@
 #include "fourier.h"
 #include "gabor.h"
 
-void EMSCRIPTEN_KEEPALIVE fft(float *yReal, float *yImag, int m, int n);
-void EMSCRIPTEN_KEEPALIVE ifft(float *yReal, float *yImag, int m, int n);
-void _fft1(float *yReal, float *yImag, int n);
-void _fft2(float *yReal, float *yImag, int m, int n);
-void printArray(char *name, float complex z[], int size);
-void printSquareMatrix(char *name, float *z, int size);
-void printComplexSquareMatrix(char *name, float complex *z, int size);
+void _printComplexArray(char *name, float complex z[], int size);
+void _printSquareMatrix(char *name, float *z, int size);
+void _printComplexSquareMatrix(char *name, float complex *z, int size);
 
 /**
  * Public method that calculates the 1D or 2D fast Fourier transform.
  */
 void EMSCRIPTEN_KEEPALIVE fft(float *yReal, float *yImag, int m, int n) {
 
-    printf("FFT Method\n");
+    printf("Launching C method...\n");
 
-    printf("%i x %i\n", m, n);
+    int size = m;
+    if (n > 1) size = m*n;
 
-    if (n > 1) {
-        printf("2d case\n");
-         _fft2(yReal, yImag, m, n);
-    } else {
-        printf("1d case\n");
-        _fft1(yReal, yImag, m);
+    // Alloc complex vector
+    float complex *y = malloc(size * sizeof(float complex));
+    float complex *yHat = malloc(size * sizeof(float complex));
+
+    for (int i = 0; i < size; i++) {
+        y[i] = yReal[i] + yImag[i] * I;
     }
 
-}
+    // Do the transform
+    if (size == m) _fft1(y, yHat, m);
+    else _fft2(y, yHat, m);
 
-/**
- * Public method that calculates the 1D or 2D inverse fast Fourier transform.
- */
-void EMSCRIPTEN_KEEPALIVE ifft(float *yReal, float *yImag, int m, int n) {
+    free(y);
 
-    printf("IFFT Method\n");
-
-    printf("%i x %i\n", m, n);
-
-    if (n > 1) {
-        printf("2d case\n");
-         _fft2(yReal, yImag, m, n);
-    } else {
-        printf("1d case\n");
-        _fft1(yReal, yImag, m);
+    // Save back the data
+    for (int i = 0; i < size; i++) {
+        yReal[i] = crealf(yHat[i]);
+        yImag[i] = cimagf(yHat[i]);
     }
+
+    free(yHat);
+
+    printf("Done!\n");
 
 }
 
@@ -75,10 +69,9 @@ void EMSCRIPTEN_KEEPALIVE conv(float *y1, float *y2, float *yConv, int m, int n)
 
     // Do the convolution
     if (n > 1) {
-        conv2(y1C, y2C, yConvC, m);
+        _conv2(y1C, y2C, yConvC, m);
     } else {
-        printf("1d case\n");
-        conv1(y1C, y2C, yConvC, m);
+        _conv1(y1C, y2C, yConvC, m);
     }
 
     free(y1C);
@@ -95,59 +88,8 @@ void EMSCRIPTEN_KEEPALIVE conv(float *y1, float *y2, float *yConv, int m, int n)
 
 }
 
-void _fft1(float *yReal, float *yImag, int n) {
-
-    // Alloc complex vector
-    float complex *y = malloc(n * sizeof(float complex));
-    float complex *yHat = malloc(n * sizeof(float complex));
-
-    for (int i = 0; i < n; i++) {
-        y[i] = yReal[i] + yImag[i] * I;
-    }
-
-    // Do the transform
-    fft1(y, yHat, n);
-
-    free(y);
-
-    // Save back the data
-    for (int i = 0; i < n; i++) {
-        yReal[i] = crealf(yHat[i]);
-        yImag[i] = cimagf(yHat[i]);
-    }
-
-    free(yHat);
-
-}
-
-void _fft2(float *yReal, float *yImag, int m, int n) {
-
-    // Alloc complex matrix
-    float complex *y = malloc(n * n * sizeof(float complex));
-    float complex *yHat = malloc(n * n * sizeof(float complex));
-
-    for (int i = 0; i < m*n; i++) {
-        y[i] = yReal[i] + yImag[i] * I;
-    }
-
-    // Do the transform
-    fft2(y, yHat, n);
-
-    free(y);
-
-    // Save back the data
-    for (int i = 0; i < m*n; i++) {
-        yReal[i] = crealf(yHat[i]);
-        yImag[i] = cimagf(yHat[i]);
-    }
-
-    free(yHat);
-
-}
-
 /**
- * Public method that calculates the 2D fast Gabor convolution of an input
- * function and a Gabor filter of given params.
+ * Public method that calculates the 2D normalized Gabor filter of given params.
  */
 void EMSCRIPTEN_KEEPALIVE normalizedFilter2(float *gReal, float *gImag, int n, float xi, float sigma, float lambda, float theta) {
 
@@ -195,7 +137,7 @@ void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConvSum, int n, float xi, floa
 
     // Calculate Fourier transform of y1C First
     float complex *y1Hat = malloc(n * n * sizeof(float complex));
-    fft2(y1C, y1Hat, n);
+    _fft2(y1C, y1Hat, n);
 
     free(y1C);
 
@@ -210,7 +152,7 @@ void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConvSum, int n, float xi, floa
         float pi = acos(-1.0);
         _normalizedFilter2(y2, n, xi, sigma, lambda, theta + pi*j/amount);
 
-        conv2Hat(y2, y1Hat, yConv, n);
+        _conv2Hat(y2, y1Hat, yConv, n);
 
         free(y2);
 
@@ -239,7 +181,11 @@ void EMSCRIPTEN_KEEPALIVE fgc2(float *y1, float *yConvSum, int n, float xi, floa
 
 }
 
-void printArray(char *name, float complex *z, int n) {
+///////////////////
+// OTHER METHODS //
+///////////////////
+
+void _printComplexArray(char *name, float complex *z, int n) {
     printf("%s = \n", name);
     for (int i = 0; i < n; i++) {
         printf("\t%f + %f i", creal(z[i]), cimag(z[i]));
@@ -248,7 +194,7 @@ void printArray(char *name, float complex *z, int n) {
     printf("]\n");
 }
 
-void printSquareMatrix(char *name, float *z, int n) {
+void _printSquareMatrix(char *name, float *z, int n) {
     printf("%s = \n", name);
     for (int i = 0; i < n; i++) {
         for (int j= 0; j < n; j++) {
@@ -259,7 +205,7 @@ void printSquareMatrix(char *name, float *z, int n) {
     printf("]\n");
 }
 
-void printComplexSquareMatrix(char *name, float complex *z, int n) {
+void _printComplexSquareMatrix(char *name, float complex *z, int n) {
     printf("%s = \n", name);
     for (int i = 0; i < n; i++) {
         for (int j= 0; j < n; j++) {

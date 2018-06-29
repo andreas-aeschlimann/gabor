@@ -7,7 +7,7 @@
 /**
  * Gets the column of an array representing a matrix.
  */
-void getColumn(float complex *y, float complex *col, int j, int n) {
+void _getColumn(float complex *y, float complex *col, int j, int n) {
     for (int i = 0; i < n; i++) {
         col[i] = y[i*n+j];
     }
@@ -16,7 +16,7 @@ void getColumn(float complex *y, float complex *col, int j, int n) {
 /**
  * Sets the column of an array representing a matrix.
  */
-void setColumn(float complex *y, float complex *col, int j, int n) {
+void _setColumn(float complex *y, float complex *col, int j, int n) {
     for (int i = 0; i < n; i++) {
         y[i*n+j] = col[i];
     }
@@ -25,7 +25,7 @@ void setColumn(float complex *y, float complex *col, int j, int n) {
 /**
  * Gets the row of an array representing a matrix.
  */
-void getRow(float complex *y, float complex *row, int i, int n) {
+void _getRow(float complex *y, float complex *row, int i, int n) {
     for (int j = 0; j < n; j++) {
         row[j] = y[i*n+j];
     }
@@ -34,7 +34,7 @@ void getRow(float complex *y, float complex *row, int i, int n) {
 /**
  * Sets the row of an array representing a matrix.
  */
-void setRow(float complex *y, float complex *row, int i, int n) {
+void _setRow(float complex *y, float complex *row, int i, int n) {
     for (int j = 0; j < n; j++) {
         y[i*n+j] = row[j];
     }
@@ -43,7 +43,7 @@ void setRow(float complex *y, float complex *row, int i, int n) {
 /**
  * Calculates the 1D fast Fourier transform of an array.
  */
-void fft1(float complex *y, float complex *yHat, int n) {
+void _fft1(float complex *y, float complex *yHat, int n) {
 
     // Check if number is > 1 and power of 2
     if (n < 2 || (n & (n-1))) {
@@ -71,11 +71,11 @@ void fft1(float complex *y, float complex *yHat, int n) {
 
     // Calculate c, d
     float complex *c = malloc(n * sizeof(float complex));
-    fft1(yEven, c, n);
+    _fft1(yEven, c, n);
     free(yEven);
 
     float complex *d = malloc(n * sizeof(float complex));
-    fft1(yOdd, d, n);
+    _fft1(yOdd, d, n);
     free(yOdd);
 
     // Correct d value
@@ -100,7 +100,7 @@ void fft1(float complex *y, float complex *yHat, int n) {
 /**
  * Calculates the 1D inverse fast Fourier transform of an array.
  */
-void ifft1(float complex *yHat, float complex *y, int n) {
+void _ifft1(float complex *yHat, float complex *y, int n) {
 
     // Conjugate the whole array
     for (int i = 0; i < n; i++) {
@@ -108,7 +108,7 @@ void ifft1(float complex *yHat, float complex *y, int n) {
     }
 
     // Calculate the FFT
-    fft1(yHat, y, n);
+    _fft1(yHat, y, n);
 
     // Conjugate the result
     float h = 1.0/n;
@@ -122,14 +122,14 @@ void ifft1(float complex *yHat, float complex *y, int n) {
 /**
  * Calculates the 1D convolution of two arrays.
  */
-void conv1(float complex *y1, float complex *y2, float complex *yConv, int n) {
+void _conv1(float complex *y1, float complex *y2, float complex *yConv, int n) {
 
     // Calculate the FFT of both vectors
     float complex *y1Hat = malloc(n * sizeof(float complex));
     float complex *y2Hat = malloc(n * sizeof(float complex));
 
-    fft1(y1, y1Hat, n);
-    fft1(y2, y2Hat, n);
+    _fft1(y1, y1Hat, n);
+    _fft1(y2, y2Hat, n);
 
     // Multiply in FFT space
     float complex *yConvHat = malloc(n * sizeof(float complex));
@@ -141,7 +141,7 @@ void conv1(float complex *y1, float complex *y2, float complex *yConv, int n) {
     free(y2Hat);
 
     // Transform back
-    ifft1(yConvHat, yConv, n);
+    _ifft1(yConvHat, yConv, n);
 
     free(yConvHat);
 
@@ -150,7 +150,7 @@ void conv1(float complex *y1, float complex *y2, float complex *yConv, int n) {
 /**
  * Calculates the 2D fast Fourier transform of an array representing a matrix.
  */
-void fft2(float complex *y, float complex *yHat, int n) {
+void _fft2(float complex *y, float complex *yHat, int n) {
 
     // Check if number is > 1 and power of 2
     if (n < 2 || (n & (n-1))) {
@@ -163,10 +163,10 @@ void fft2(float complex *y, float complex *yHat, int n) {
     for (int k = 0; k < n; k++) {
         float complex *t = malloc(n * sizeof(float complex));
         float complex *tHat = malloc(n * sizeof(float complex));
-        getRow(y, t, k, n);
-        fft1(&t[0], tHat, n);
+        _getRow(y, t, k, n);
+        _fft1(&t[0], tHat, n);
         free(t);
-        setRow(yHatTemp, tHat, k, n);
+        _setRow(yHatTemp, tHat, k, n);
         free(tHat);
     }
 
@@ -174,10 +174,10 @@ void fft2(float complex *y, float complex *yHat, int n) {
     for (int k = 0; k < n; k++) {
         float complex *t = malloc(n * sizeof(float complex));
         float complex *tHat = malloc(n * sizeof(float complex));
-        getColumn(yHatTemp, t, k, n);
-        fft1(t, tHat, n);
+        _getColumn(yHatTemp, t, k, n);
+        _fft1(t, tHat, n);
         free(t);
-        setColumn(yHat, tHat, k, n);
+        _setColumn(yHat, tHat, k, n);
         free(tHat);
     }
     free(yHatTemp);
@@ -187,7 +187,7 @@ void fft2(float complex *y, float complex *yHat, int n) {
 /**
  * Calculates the 2D inverse fast Fourier transform of an array representing a matrix.
  */
-void ifft2(float complex *yHat, float complex *y, int n) {
+void _ifft2(float complex *yHat, float complex *y, int n) {
 
     // Conjugate the whole array
     for (int i = 0; i < n*n; i++) {
@@ -195,7 +195,7 @@ void ifft2(float complex *yHat, float complex *y, int n) {
     }
 
     // Calculate the FFT
-    fft2(yHat, y, n);
+    _fft2(yHat, y, n);
 
     // Conjugate the result
     float h = 1.0/(n*n);
@@ -208,14 +208,14 @@ void ifft2(float complex *yHat, float complex *y, int n) {
 /**
  * Calculates the 2D convolution of two arrays representing a matrix.
  */
-void conv2(float complex *y1, float complex *y2, float complex *yConv, int n) {
+void _conv2(float complex *y1, float complex *y2, float complex *yConv, int n) {
 
     // Calculate the FFT of both vectors
     float complex *y1Hat = malloc(n * n * sizeof(float complex));
     float complex *y2Hat = malloc(n * n * sizeof(float complex));
 
-    fft2(y1, y1Hat, n);
-    fft2(y2, y2Hat, n);
+    _fft2(y1, y1Hat, n);
+    _fft2(y2, y2Hat, n);
 
     // Multiply in FFT space
     float complex *yConvHat = malloc(n * n * sizeof(float complex));
@@ -227,34 +227,22 @@ void conv2(float complex *y1, float complex *y2, float complex *yConv, int n) {
     free(y2Hat);
 
     // Transform back
-    ifft2(yConvHat, yConv, n);
+    _ifft2(yConvHat, yConv, n);
 
     free(yConvHat);
 
-}
-
-
-void printComplexSquareMatrix2(float complex *z, int n) {
-    printf("MATRIX[%i][%i] = [\n", n, n);
-    for (int i = 0; i < n; i++) {
-        for (int j= 0; j < n; j++) {
-            printf("\t%f + %f*i", creal(z[i*n+j]), cimag(z[i*n+j]));
-        }
-        printf("\n");
-    }
-    printf("]\n");
 }
 
 /**
  * Calculates the 2D convolution of two arrays representing a matrix,
  * where the second array already is in Fourier space.
  */
-void conv2Hat(float complex *y1, float complex *y2Hat, float complex *yConv, int n) {
+void _conv2Hat(float complex *y1, float complex *y2Hat, float complex *yConv, int n) {
 
     // Calculate the FFT of the first vector
     float complex *y1Hat = malloc(n * n * sizeof(float complex));
 
-    fft2(y1, y1Hat, n);
+    _fft2(y1, y1Hat, n);
 
     // Multiply in FFT space
     float complex *yConvHat = malloc(n * n * sizeof(float complex));
@@ -265,7 +253,7 @@ void conv2Hat(float complex *y1, float complex *y2Hat, float complex *yConv, int
     free(y1Hat);
 
     // Transform back
-    ifft2(yConvHat, yConv, n);
+    _ifft2(yConvHat, yConv, n);
 
     free(yConvHat);
 
