@@ -1,29 +1,29 @@
-import {BrowserModule} from "@angular/platform-browser";
-import {NgModule} from "@angular/core";
-import {RouterModule, Routes} from "@angular/router";
-import {FormsModule} from "@angular/forms";
+import { NgModule } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { BrowserModule } from "@angular/platform-browser";
+import { RouterModule, Routes } from "@angular/router";
 
-import {ImageProcessingService} from "./model/math/image-processing.service";
-import {ProgressService} from "./model/math/progress.service";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
-import {MathJaxDirective} from "./model/other/math-jax.directive";
+import { AppComponent } from "./app.component";
 
-import {AppComponent} from "./app.component";
+import { ImageProcessingService } from "./model/math/image-processing.service";
+import { ProgressService } from "./model/math/progress.service";
 
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {DemoComponent} from "./view/demo/demo.component";
-import {DocsComponent} from "./view/docs/docs.component";
-import {AboutComponent} from "./view/about/about.component";
+import { MathJaxDirective } from "./model/other/math-jax.directive";
+import { AboutComponent } from "./view/about/about.component";
+import { DemoComponent } from "./view/demo/demo.component";
+import { DocsComponent } from "./view/docs/docs.component";
 import { FilterComponent } from "./view/filter/filter.component";
 
-import {InputSliderComponent} from "./view/input-slider/input-slider.component";
+import { InputSliderComponent } from "./view/input-slider/input-slider.component";
 
 const appRoutes: Routes = [
     {path: "demo", component: DemoComponent},
     {path: "docs", component: DocsComponent},
     {path: "about", component: AboutComponent},
     {path: "*", redirectTo: "/demo"},
-    {path: "**", redirectTo: "/demo"}
+    {path: "**", redirectTo: "/demo"},
 ];
 
 @NgModule({
@@ -34,10 +34,10 @@ const appRoutes: Routes = [
         AboutComponent,
         MathJaxDirective,
         InputSliderComponent,
-        FilterComponent
+        FilterComponent,
     ],
     entryComponents: [
-        FilterComponent
+        FilterComponent,
     ],
     imports: [
         BrowserModule,
@@ -46,13 +46,14 @@ const appRoutes: Routes = [
             appRoutes,
             {
                 enableTracing: false,
-                useHash: true
-            }
+                useHash: true,
+                relativeLinkResolution: "legacy",
+            },
         ),
-        NgbModule.forRoot()
+        NgbModule.forRoot(),
     ],
     providers: [ImageProcessingService, ProgressService],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
 export class AppModule {
 }
