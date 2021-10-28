@@ -65,6 +65,6 @@ var gaborConvolution2 = function() {
         console.error(e);
     }
 
-    postMessage({fConv: fConv});
+    postMessage({fConv: Array.from(fConv)});
 
 }
