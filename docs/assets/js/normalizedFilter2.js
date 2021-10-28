@@ -61,6 +61,6 @@ var normalizedFilter2 = function() {
         console.error(e);
     }
 
-    postMessage({gReal: gReal, gImag: gImag});
+    postMessage({gReal: Array.from(gReal), gImag: Array.from(gImag)});
 
 }
