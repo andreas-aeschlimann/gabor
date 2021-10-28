@@ -130,7 +130,7 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
      * The modal
      * @type {NgbModalRef}
      */
-    @ViewChild("filterModal", { static: false }) filterModal: NgbModalRef;
+    @ViewChild("filterModal") filterModal: NgbModalRef;
 
     /**
      * An estimate of the average calculation time based on 1024 image
