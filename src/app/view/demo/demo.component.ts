@@ -63,13 +63,13 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
      * Input canvas html element
      * @type {ElementRef}
      */
-    @ViewChild("inputCanvas") inputCanvas: ElementRef;
+    @ViewChild("inputCanvas", { static: true }) inputCanvas: ElementRef;
 
     /**
      * Output canvas html element
      * @type {ElementRef}
      */
-    @ViewChild("outputCanvas") outputCanvas: ElementRef;
+    @ViewChild("outputCanvas", { static: true }) outputCanvas: ElementRef;
 
     /**
      * The input canvas image
@@ -130,7 +130,7 @@ export class DemoComponent implements OnInit, AfterViewInit, OnDestroy {
      * The modal
      * @type {NgbModalRef}
      */
-    @ViewChild("filterModal") filterModal: NgbModalRef;
+    @ViewChild("filterModal", { static: false }) filterModal: NgbModalRef;
 
     /**
      * An estimate of the average calculation time based on 1024 image

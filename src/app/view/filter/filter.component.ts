@@ -52,13 +52,13 @@ export class FilterComponent implements OnInit, AfterViewInit {
      * Filter canvas html element
      * @type {ElementRef}
      */
-    @ViewChild("filterRealCanvas") filterRealCanvas: ElementRef;
+    @ViewChild("filterRealCanvas", { static: true }) filterRealCanvas: ElementRef;
 
     /**
      * Filter canvas html element
      * @type {ElementRef}
      */
-    @ViewChild("filterImagCanvas") filterImagCanvas: ElementRef;
+    @ViewChild("filterImagCanvas", { static: true }) filterImagCanvas: ElementRef;
 
     /**
      * The filter canvas image
