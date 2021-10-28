@@ -50,7 +50,7 @@ const appRoutes: Routes = [
                 relativeLinkResolution: "legacy",
             },
         ),
-        NgbModule.forRoot(),
+        NgbModule,
     ],
     providers: [ImageProcessingService, ProgressService],
     bootstrap: [AppComponent],
