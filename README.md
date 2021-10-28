@@ -62,4 +62,4 @@ This web application has been developed in 2018 by Andreas Aeschlimann, Mathemat
 
 The source code may be freely used and is licensed under MIT.
 
-Contact: a.aeschlimann@unibas.ch
+Contact: andreas@appvision.ch
